@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Servidor</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive,  Georgia, Times, serif;
+            background: url(https://www.toptal.com/designers/subtlepatterns/patterns/cream_dust.png) repeat 0 0;
+        }
+        .title {
+            margin: 30px 0 60px;
+        }
+
+        .container {
+            padding: 5% 15px;
+        }
+
+        #begin-button {
+            width: 100%;
+        }
+
+        #nplayer-input {
+            font-size: 9px;
+            margin: 5px 0;
+        }
+
+        #begin-form {
+            width: 600px;
+            margin: 0 auto;
+        }
+
+        .player-view {
+            border-left: 1px solid;
+            border-right: 1px solid;
+            padding: 20px 15px;
+        }
+
+        .player-view h4 {
+            font-size: 13px;
+        }
+
+        .player-view h3 {
+            font-size: 16px
+        }
+
+        .round-win {
+            padding-top: 35px;
+            transition: 0.6s;
+            box-shadow: -2px 10px 14px 0px rgba(103, 103, 103, 0.75);
+        }
+
+        .highlight-star-container {
+            height: 0;
+            text-align: center;
+        }
+
+        .highlight-star {
+            position: relative;
+            height: 70px;
+            top: -10px;
+        }
+
+        footer {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            background-color: #333333;
+            text-align: center;
+            font-size: 9px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center">
+            <img src="https://conceptdraw.com/a155c4/p154/preview/640/pict--server-cloud-round-icons-vector-stencils-library" width="150" alt="" style="border-radius: 50%;
+            border: 1px solid;">
+            <h2 class="title">Simulador de Servidor</h2><div></div>
+            <div id="begin-form" class="row">
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Chegada Fila 1">
+                </div>
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Chegada Fila 2">
+                </div>
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Serviço Servidor 1">
+                </div>
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Serviço Servidor 2">
+                </div>
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Falha Servidores">
+                </div>
+                <div class="col-sm-6">
+                    <input id="nplayer-input" class="form-control" type="text" placeholder="Porcentagem de Falha Serv">
+                </div>
+                <div class="col-sm-12">
+                    <button id="begin-button" class="btn btn-success">Começar</button>
+                </div>
+            </div>
+
+            <div id="game-view" style="display: none;">
+                <button class="btn btn-primary">Próxima Rodada</button>
+            </div>
+        </div>
+    </div>
+    <footer>Dev by Nathan Reuter Godinho- <a target="_blank" href="https://github.com/NathanReuter/jogodepalitos">Github</a></footer>
+    <script src="build/game.js"></script>
+</body>
+</html>

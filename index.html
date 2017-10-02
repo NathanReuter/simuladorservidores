@@ -20,7 +20,8 @@
         }
 
         #begin-button {
-            width: 100%;
+            margin-top: 40px;
+            width: 300px;
         }
 
         #nplayer-input {
@@ -29,7 +30,7 @@
         }
 
         #begin-form {
-            width: 600px;
+            /*width: 600px;*/
             margin: 0 auto;
         }
 
@@ -85,22 +86,70 @@
             <h2 class="title">Simulador de Servidor</h2><div></div>
             <div id="begin-form" class="row">
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Chegada Fila 1">
+                    <h6>Tempo Chegada Fila 1</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Chegada Fila 2">
+                    <h6>Tempo Chegada Fila 2</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Serviço Servidor 1">
+                    <h6>Tempo Chegada Servidor 1</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Serviço Servidor 2">
+                    <h6>Tempo Chegada Servidor 2</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Tempo de Falha Servidores">
+                    <h6>Tempo de Falha Servidores</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-6">
-                    <input id="nplayer-input" class="form-control" type="text" placeholder="Porcentagem de Falha Serv">
+                    <h6>Porcentagem de Falha</h6>
+                </div>
+                <div class="col-sm-3">
+                    <input id="nplayer-input" class="form-control" min="0" max="100" type="number" placeholder="%">
+                </div>
+                <div class="col-sm-3">
+                    <select>
+                        <option value="Constant">Constante</option>
+                    </select>
                 </div>
                 <div class="col-sm-12">
                     <button id="begin-button" class="btn btn-success">Começar</button>

@@ -17092,7 +17092,8 @@
 
 	var Game = require('./game'),
         View = require('./view'),
-        _ = require('lodash');
+        _ = require('lodash'),
+        probFunctions = require('./probFunctions');
 
     var init = function () {
         var beginButton = document.getElementById('begin-button');
@@ -17108,10 +17109,11 @@
 
 	window.game = new Game();
 	window.view = new View();
+	window.prob = new probFunctions();
 
 	init();
 })(window);
-},{"./game":4,"./view":6,"lodash":1}],3:[function(require,module,exports){
+},{"./game":4,"./probFunctions":6,"./view":7,"lodash":1}],3:[function(require,module,exports){
 (function() {
 	'use strict';
 
@@ -17387,6 +17389,70 @@
     module.exports = Player;
 })();
 },{"./config":3,"lodash":1}],6:[function(require,module,exports){
+(function () {
+    'use strict';
+
+    var probFunctions = function () {};
+
+    probFunctions.prototype.const = function (constValue) {
+        return constValue;
+    };
+
+    probFunctions.prototype.expo = function (mean) {
+       var u = Math.random();
+
+       if (!u || !mean) {
+           return 0;
+       }
+
+       return (-1 / mean) * (Math.log(1 - u));
+    };
+
+    /* Return an normal dist random number
+    * @params mean, standard deviation*/
+    probFunctions.prototype.normal = function (mean, sd) {
+        // var u1 = Math.random(),
+        var u1 = 0.1758,
+            u2 = 0.1489,
+            z = Math.sqrt(- 2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+        if (!mean || !sd || !z) {
+            return z;
+        }
+
+        return mean + sd * z;
+    };
+
+    probFunctions.prototype.triangular = function (min, moda, max) {
+        var interval = (moda - min) / (max - min),
+            u = Math.random(),
+            lowerFunction = function () {
+                return min + Math.sqrt(u * (moda - min) * (max - moda));
+            },
+            upperFunction = function () {
+                return max - Math.sqrt((1 - u) * (max - moda) * (max - min));
+            };
+
+        if (u >= 0 && u < interval) {
+            return lowerFunction();
+        } else if (interval < u  && u <= 1) {
+            return upperFunction();
+        }
+
+        return 0;
+    };
+
+    probFunctions.prototype.uniforme = function (min, max) {
+        // var u = Math.random();
+        var u = Math.random();
+
+        return min + (u * (max-min));
+    };
+
+
+    module.exports = probFunctions;
+})();
+},{}],7:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */

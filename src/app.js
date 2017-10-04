@@ -3,7 +3,8 @@
 
 	var Game = require('./game'),
         View = require('./view'),
-        _ = require('lodash');
+        _ = require('lodash'),
+        probFunctions = require('./probFunctions');
 
     var init = function () {
         var beginButton = document.getElementById('begin-button');
@@ -19,6 +20,7 @@
 
 	window.game = new Game();
 	window.view = new View();
+	window.prob = new probFunctions();
 
 	init();
 })(window);

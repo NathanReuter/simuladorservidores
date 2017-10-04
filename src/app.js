@@ -1,10 +1,10 @@
 (function (window) {
 	'use strict';
 
-	var Game = require('./game'),
+	var Simulation = require('./simulation'),
         View = require('./view'),
         _ = require('lodash'),
-        probFunctions = require('./probFunctions');
+        ProbFunctions = require('./probFunctions');
 
     var init = function () {
         var beginButton = document.getElementById('begin-button');
@@ -18,9 +18,9 @@
         };
     };
 
-	window.game = new Game();
+	window.simulation = new Simulation();
 	window.view = new View();
-	window.prob = new probFunctions();
+	window.prob = new ProbFunctions();
 
 	init();
 })(window);

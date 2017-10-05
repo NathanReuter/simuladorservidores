@@ -34,35 +34,12 @@
             margin: 0 auto;
         }
 
-        .player-view {
-            border-left: 1px solid;
-            border-right: 1px solid;
-            padding: 20px 15px;
+        .hide {
+            display: none;
         }
 
-        .player-view h4 {
-            font-size: 13px;
-        }
-
-        .player-view h3 {
-            font-size: 16px
-        }
-
-        .round-win {
-            padding-top: 35px;
-            transition: 0.6s;
-            box-shadow: -2px 10px 14px 0px rgba(103, 103, 103, 0.75);
-        }
-
-        .highlight-star-container {
-            height: 0;
-            text-align: center;
-        }
-
-        .highlight-star {
-            position: relative;
-            height: 70px;
-            top: -10px;
+        .form-input input {
+            font-size: 10px;
         }
 
         footer {
@@ -85,67 +62,152 @@
             border: 1px solid;">
             <h2 class="title">Simulador de Servidor</h2><div></div>
             <div id="begin-form" class="row">
-                <div class="col-sm-6">
-                    <h6>Tempo Chegada Fila 1</h6>
-                </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
-                </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
-                    </select>
-                </div>
-                <div class="col-sm-6">
-                    <h6>Tempo Chegada Fila 2</h6>
-                </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
-                </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
+                <div id="begin-form-tc1">
+                    <div class="col-sm-5">
+                        <h6>Tempo Chegada Fila 1</h6>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-input const">
+                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                        </div>
+                        <div class="form-input expo hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                        </div>
+                        <div class="form-input normal hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                            <input class="form-control" type="number" placeholder="Desvio Padrão">
+                        </div>
+                        <div class="form-input triangular hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Moda">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                        <div class="form-input uniform hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
 
-                    </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                            <option value="expo">Exponencial</option>
+                            <option value="normal">Normal</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="uniform">Uniforme</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <h6>Tempo Chegada Servidor 1</h6>
+
+                <div id="begin-form-tc2">
+                    <div class="col-sm-5">
+                        <h6>Tempo Chegada Fila 2</h6>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-input const">
+                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                        </div>
+                        <div class="form-input expo hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                        </div>
+                        <div class="form-input normal hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                            <input class="form-control" type="number" placeholder="Desvio Padrão">
+                        </div>
+                        <div class="form-input triangular hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Moda">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                        <div class="form-input uniform hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                            <option value="expo">Exponencial</option>
+                            <option value="normal">Normal</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="uniform">Uniforme</option>
+
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
+
+                <div id="begin-form-ts1">
+                    <div class="col-sm-5">
+                        <h6>Tempo Chegada Servidor 1</h6>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-input const">
+                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                        </div>
+                        <div class="form-input expo hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                        </div>
+                        <div class="form-input normal hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                            <input class="form-control" type="number" placeholder="Desvio Padrão">
+                        </div>
+                        <div class="form-input triangular hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Moda">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                        <div class="form-input uniform hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                            <option value="expo">Exponencial</option>
+                            <option value="normal">Normal</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="uniform">Uniforme</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
-                    </select>
+
+                <div id="begin-form-ts2">
+                    <div class="col-sm-5">
+                        <h6>Tempo Chegada Servidor 2</h6>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-input const">
+                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                        </div>
+                        <div class="form-input expo hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                        </div>
+                        <div class="form-input normal hide">
+                            <input class="form-control" type="number" placeholder="Média">
+                            <input class="form-control" type="number" placeholder="Desvio Padrão">
+                        </div>
+                        <div class="form-input triangular hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Moda">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                        <div class="form-input uniform hide">
+                            <input class="form-control" type="number" placeholder="Min">
+                            <input class="form-control" type="number" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                            <option value="expo">Exponencial</option>
+                            <option value="normal">Normal</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="uniform">Uniforme</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <h6>Tempo Chegada Servidor 2</h6>
-                </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
-                </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
-                    </select>
-                </div>
+
                 <div class="col-sm-6">
                     <h6>Tempo de Falha Servidores</h6>
                 </div>
@@ -187,6 +249,6 @@
         </div>
     </div>
     <footer>Dev by Nathan Reuter Godinho- <a target="_blank" href="https://github.com/NathanReuter/jogodepalitos">Github</a></footer>
-    <script src="build/game.js"></script>
+    <script src="build/app.js"></script>
 </body>
 </html>

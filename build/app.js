@@ -17090,305 +17090,37 @@
 (function (window) {
 	'use strict';
 
-	var Game = require('./game'),
+	var Simulation = require('./simulation'),
         View = require('./view'),
         _ = require('lodash'),
-        probFunctions = require('./probFunctions');
+        ProbFunctions = require('./probFunctions');
 
-    var init = function () {
+    var init = function (view) {
+        view.init();
         var beginButton = document.getElementById('begin-button');
 
         beginButton.onclick = function () {
-            var numberOfPlayers = document.getElementById('nplayer-input').value;
-            _(numberOfPlayers)
-                .thru(game.init)
-                .thru(view.init)
-                .value();
+
         };
     };
 
-	window.game = new Game();
+	window.simulation = new Simulation();
 	window.view = new View();
-	window.prob = new probFunctions();
+	window.prob = new ProbFunctions();
 
-	init();
+	init(window.view);
 })(window);
-},{"./game":4,"./probFunctions":6,"./view":7,"lodash":1}],3:[function(require,module,exports){
+},{"./probFunctions":4,"./simulation":5,"./view":6,"lodash":1}],3:[function(require,module,exports){
 (function() {
 	'use strict';
 
 	var config = {
-		name: 'Jogo da Porrinha',
-		playersColors: ['antiquewhite', 'aquamarine', 'greenyellow', 'lightcoral', 'aqua'],
-		gameSettings: {
-			minPlayers: 2,
-			maxPLayers: 5,
-			playersMaxSticks: 3
-		}
+		name: 'Simulador de Filas'
 	};
 
 	module.exports = config;
 })();
 },{}],4:[function(require,module,exports){
-/**
- * Created by nathangodinho on 08/04/17.
- */
-(function () {
-    "use strict";
-
-    var config = require('./config'),
-        Player = require('./player'),
-        _ = require('lodash');
-
-    var createPlayers = function (nOfPlayers) {
-        return _.times(nOfPlayers)
-            .map(function (id) {
-                return new Player(id);
-            });
-    };
-
-    var checkNumberOfPlayer = function (nOfPlayers) {
-        if (nOfPlayers > config.gameSettings.maxPLayers) {
-            return config.gameSettings.maxPLayers;
-        }
-
-        if (!nOfPlayers || nOfPlayers < config.gameSettings.minPlayers) {
-            return config.gameSettings.minPlayers;
-        }
-
-        return nOfPlayers;
-    };
-
-    var checkWinCondition = function (player) {
-        if (!player.totalSticks) {
-            window.game.winner = player.id + 1;
-            alert('Jogador ' + (player.id + 1)  + ' Venceu!');
-        }
-    };
-
-    var nextRound = function (players) {
-        /* Sum of all sticks in game*/
-        var amountOfSticksInGame = function () {
-            return _(players)
-                .map(function (player) {
-                    return player.totalSticks;
-                }).reduce(function (sticksSum, nSticks) {
-                    return sticksSum += nSticks;
-                });
-        }();
-
-        /* Sum of all sticks in hand in this round,
-        * the players must guess this number */
-        var totalInHandSticks = function () {
-            return _(players)
-                .map(function (player) {
-                    return player.inHandSticks;
-                }).reduce(function (sticksSum, nSticks) {
-                    return sticksSum += nSticks;
-                });
-        }();
-
-        var isCorrectBet = function (playerBet, totalInHandSticks) {
-            return playerBet === totalInHandSticks;
-        };
-
-        /* Begin the round with the winning player and for every player
-        * colectes its bets, at the end check if anyOf them had win.*/
-        var checkPlayersBet = function (players) {
-            var playersBets = [];
-
-            var getBetOfThePlayers = function (playersBets) {
-                players = _(players)
-                    .sortBy('hadWin')
-                    .reverse()
-                    .forEach(function (player) {
-                        var playerbet = player.bet(amountOfSticksInGame, players, playersBets);
-
-                        playersBets.push(playerbet);
-                        player.clearWin();
-                    });
-            },
-
-            checkForWinners = function (playersBets, players) {
-                _.forEach(playersBets, function (playerBet, index) {
-                    var player = players[index];
-
-                    if (isCorrectBet(playerBet, totalInHandSticks)) {
-                        player.decreaseStick();
-                        player.setWin();
-                        checkWinCondition(player);
-                    }
-
-                    player.chooseNewsSticks();
-                });
-            };
-
-            getBetOfThePlayers(playersBets);
-            checkForWinners(playersBets, players);
-        };
-
-        checkPlayersBet(players);
-    };
-
-    var Game = function () {};
-
-    Game.prototype.init = function (nOfPlayers) {
-        var players = createPlayers(checkNumberOfPlayer(nOfPlayers));
-
-        nextRound(players);
-
-        return players;
-    };
-
-    Game.prototype.nextRound = nextRound;
-
-    module.exports  = Game;
-})();
-},{"./config":3,"./player":5,"lodash":1}],5:[function(require,module,exports){
-/**
- * Created by nathangodinho on 08/04/17.
- */
-(function () {
-    "use strict";
-
-    var config = require('./config'),
-        _ = require('lodash');
-
-    var getPlayerSticks = function (maxSticks) {
-        var chooseTrim = function (cb) {
-            if (Math.random() > 0.5) {
-                return Math.ceil(cb())
-            }
-
-            return Math.floor(cb());
-        };
-
-        return chooseTrim(function () {
-            return Math.random() * maxSticks;
-        });
-    };
-
-    var findBestBet = function (players, playersBets, totalInGameSticks) {
-        var player = this;
-        var parentNode = {
-            isParent: true,
-            children: []
-        };
-        var nodesCount = 0;
-
-        var createNode = function (parentNode, lastNodeSticks) {
-            var newNode = {
-                id: nodesCount,
-                parentNode: parentNode,
-                children: []
-            };
-
-            if(lastNodeSticks < player.inHandSticks){
-                newNode.bet = player.inHandSticks;
-            } else {
-                newNode.bet = lastNodeSticks + 1;
-            }
-
-            nodesCount++;
-
-            return newNode;
-        };
-
-        var populateVisitedList = function (playerBets) {
-            if (!playerBets.length) {
-                return [];
-            } else if (playerBets.length === 1) {
-                return [createNode(parentNode, playerBets[0])]
-            }
-
-            var visitedNodes = [];
-
-            _.reduce(playersBets, function (last, current) {
-                var parent = createNode(parentNode, last);
-                visitedNodes.push(parent);
-
-                return createNode(parent, current);
-            });
-
-            return visitedNodes;
-        };
-
-
-        var calculateGuess = function (nodo) {
-            var diference = 0;
-
-            _.forEach(visitedNodes, function (visited, index) {
-                var diff = players[index + 1].qtdMaxPalitos - nodo.bet;
-
-                if (diff > 0) {
-                    diference += diff;
-                }
-            });
-
-            if (nodo.bet < player.inHandSticks || nodo.bet > totalInGameSticks - diference) {
-                return 0;
-            }
-
-            var guess = ((((totalInGameSticks - diference) - player.totalSticks) / players.length) / 2 )
-                * players.length + player.inHandSticks;
-
-            return guess * 10 - (Math.abs(nodo.bet - guess));
-
-        };
-
-        var visitedNodes = populateVisitedList(playersBets);
-        var actualNode = createNode(parentNode, 0);
-        var nextNode = createNode(parentNode, actualNode.bet);
-
-        parentNode.children.push(actualNode);
-        parentNode.children.push(nextNode);
-
-        var actualNodeGrade = calculateGuess(actualNode);
-        var nextNodeGrade = calculateGuess(nextNode);
-
-        while(actualNodeGrade < nextNodeGrade){
-            actualNode = nextNode;
-            actualNodeGrade = nextNodeGrade;
-            nextNode = createNode(parentNode, nextNode.bet);
-            parentNode.children.push(nextNode);
-            nextNodeGrade = calculateGuess(nextNode);
-        }
-
-        return actualNode.bet;
-    };
-
-    var Player = function (id) {
-        this.id = id;
-        this.totalSticks = config.gameSettings.playersMaxSticks;
-        this.inHandSticks = getPlayerSticks(this.totalSticks);
-        this.hadWin = false;
-    };
-
-    Player.prototype.chooseNewsSticks = function () {
-        this.inHandSticks = getPlayerSticks(this.totalSticks);
-    };
-
-    Player.prototype.decreaseStick = function () {
-        this.totalSticks--;
-    };
-
-    Player.prototype.setWin = function () {
-        this.hadWin = true;
-    };
-
-    Player.prototype.clearWin = function () {
-        this.hadWin = false;
-    };
-
-    Player.prototype.bet = function (totalSticksInGame, players, playersBets) {
-        return findBestBet.call(this, players, playersBets, totalSticksInGame);
-
-        // return getPlayerSticks(totalSticksInGame);
-    };
-
-    module.exports = Player;
-})();
-},{"./config":3,"lodash":1}],6:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -17398,6 +17130,8 @@
         return constValue;
     };
 
+    /* Return an expo dist random number
+     * @params mean*/
     probFunctions.prototype.expo = function (mean) {
        var u = Math.random();
 
@@ -17408,12 +17142,11 @@
        return (-1 / mean) * (Math.log(1 - u));
     };
 
-    /* Return an normal dist random number
+    /* Return a normal dist random number
     * @params mean, standard deviation*/
     probFunctions.prototype.normal = function (mean, sd) {
-        // var u1 = Math.random(),
-        var u1 = 0.1758,
-            u2 = 0.1489,
+        var u1 = Math.random(),
+            u2 = Math.random(),
             z = Math.sqrt(- 2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 
         if (!mean || !sd || !z) {
@@ -17423,6 +17156,8 @@
         return mean + sd * z;
     };
 
+    /* Return a triangular dist random number
+     * @params minValue, modal value and Max value*/
     probFunctions.prototype.triangular = function (min, moda, max) {
         var interval = (moda - min) / (max - min),
             u = Math.random(),
@@ -17442,6 +17177,8 @@
         return 0;
     };
 
+    /* Return an uniforme dist random number
+     * @params min value and max value*/
     probFunctions.prototype.uniforme = function (min, max) {
         // var u = Math.random();
         var u = Math.random();
@@ -17452,7 +17189,20 @@
 
     module.exports = probFunctions;
 })();
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+/**
+ * Created by nathangodinho on 08/04/17.
+ */
+(function () {
+    "use strict";
+
+    var Simulation = function () {
+
+    };
+
+    module.exports  = Simulation;
+})();
+},{}],6:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */
@@ -17463,144 +17213,49 @@
     var _ = require('lodash'),
         config = require('./config');
 
-    var hideBeginForm = function () {
-        var beginForm = document.getElementById('begin-form');
+    var hideElement = function (selector) {
+        var element = document.getElementById(selector);
 
-        beginForm.style.display = 'none';
-
-        return beginForm;
+        element.style.display = 'none';
     };
 
-    var showBeginForm = function () {
-        var beginForm = document.getElementById('begin-form');
+    var showElement = function (selector) {
+        var element = document.getElementById(selector);
 
-        beginForm.style.display = 'block';
-
-        return beginForm;
+        element.style.display = 'block';
     };
 
-    var hideGameView = function () {
-        document.getElementById('game-view')
-            .innerHTML = '';
-    };
+    var bindFormListeners = function () {
+        var viewsIds = ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2'];
 
-    var showGameView = function () {
-        var gameView = document.getElementById('game-view');
+        _.forEach(viewsIds, function (id) {
+            var input = document.querySelectorAll(id.concat(' input'))[0],
+                select = document.querySelectorAll(id.concat(' select'))[0],
+                hideAllViews = function () {
+                    var views = document.querySelectorAll(id.concat(' .form-input'));
 
-        gameView.style.display = 'block';
+                    _.forEach(views, function (view) {
+                        if (!_.includes(view.className, 'hide')) {
+                            view.className = view.className + ' hide';
+                        }
+                    });
+                };
 
-        return gameView;
-    };
 
-    var createPlayersView = function (players, gameView) {
-        if (window.game.winner) {
-            return endGameView(window.game.winner);
-        }
+            select.onchange = function () {
+                hideAllViews();
+                var selected = document.querySelector(id.concat(' .' + this.value));
+                console.log(selected);
 
-        var winPlayers = [];
-        var playerViewTemplate =
-                '<div class="col-sm-{{nPlayer}} player-view" id="player-{{id}}" style="background: {{color}}">' +
-                    '<h4>Jogador: {{id}}</h4>' +
-                    '<h3>Na Mão: {{inHandSticks}}</h3>' +
-                    '<h3>Total: {{totalSticks}}</h3>' +
-                '</div>';
-
-        var nextRoundButtonTemplate =
-            '<div class="row"> ' +
-                '<div class="col-sm-12" style="margin-top: 20px;"> '+
-                    '<button class="btn btn-primary bt-lg" id="next-round-button">Próxima Rodada</button>' +
-                '</div>' +
-            '</div>';
-
-        playerViewTemplate = playerViewTemplate
-                .replace('{{nPlayer}}', Math.floor(12 / players.length));
-
-        gameView.innerHTML = '<div class="row"></div>';
-
-        _.forEach(players, function (player) {
-            if (player.hadWin) {
-                winPlayers.push(player.id + 1);
-            }
-
-            var playerView = playerViewTemplate
-                .replace(/{{id}}/g, player.id + 1)
-                .replace('{{inHandSticks}}', player.inHandSticks)
-                .replace('{{totalSticks}}', player.totalSticks)
-                .replace('{{color}}', config.playersColors[player.id]);
-
-            gameView.firstChild.innerHTML += playerView;
-        });
-
-        gameView.firstChild.innerHTML += nextRoundButtonTemplate;
-
-        setTimeout(function () {
-            _.forEach(winPlayers, function (id) {
-                var el = document.getElementById('player-'.concat(id));
-
-                el.className += ' round-win' ;
-            });
-
-        }, 100);
-
-        document.getElementById('next-round-button').onclick = function () {
-            window.game.nextRound(players);
-            createPlayersView(players, gameView);
-        };
-    };
-
-    var endGameView = function (winnerId) {
-        var gameView = document.getElementById('game-view'),
-            nextRoundButton = document.getElementById('next-round-button'),
-            starContainer = document.createElement('div'),
-            star = document.createElement('img'),
-            replayButton = document.createElement('button');
-
-        var setUpStar = function () {
-            starContainer.className = 'highlight-star-container';
-            star.src = 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Gold_Star.png';
-            star.className = 'highlight-star';
-            starContainer.appendChild(star);
-        };
-
-        var setupReplayButton = function () {
-            replayButton.className = 'btn btn-warning btn-lg';
-            replayButton.textContent = 'Jogar Novamente';
-
-            replayButton.onclick = function () {
-                window.game.winner = undefined;
-                hideGameView();
-                showBeginForm();
+                selected.className = _.replace(selected.className, 'hide', '');
             };
-        };
-
-        var addReplayButton = function () {
-            nextRoundButton.parentNode.removeChild(nextRoundButton);
-            gameView.appendChild(replayButton);
-        };
-
-        var highlightWinner = function () {
-            document.getElementById('player-'.concat(winnerId))
-                .appendChild(starContainer);
-        };
-
-        setupReplayButton();
-        addReplayButton();
-        setUpStar();
-        setTimeout(function () {
-            highlightWinner();
         });
     };
 
     var View = function () {
-        this.init = function (players) {
-            hideBeginForm();
-            _()
-                .thru(showGameView)
-                .thru(_.bind(createPlayersView, null, players))
-                .value();
+        this.init = function () {
+            bindFormListeners();
         };
-
-        this.endGameView = endGameView;
     };
 
     module.exports = View;

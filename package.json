@@ -5,8 +5,8 @@
   "main": "src/app.js",
   "scripts": {
     "start": "open index.html",
-    "build": "browserify src/app.js -o build/game.js && echo 'Builded' ",
-    "deploy": "browserify src/app.js | node  ./node_modules/uglify-js/bin/uglifyjs > build/game.js && echo 'Deployed'"
+    "build": "browserify src/app.js -o build/app.js && echo 'Builded' ",
+    "deploy": "browserify src/app.js | node  ./node_modules/uglify-js/bin/uglifyjs > build/app.js && echo 'Deployed'"
   },
   "keywords": [
     "IA",

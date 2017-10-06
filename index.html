@@ -61,32 +61,51 @@
             <img src="https://conceptdraw.com/a155c4/p154/preview/640/pict--server-cloud-round-icons-vector-stencils-library" width="150" alt="" style="border-radius: 50%;
             border: 1px solid;">
             <h2 class="title">Simulador de Servidor</h2><div></div>
-            <div id="begin-form" class="row">
-                <div id="begin-form-tc1">
-                    <div class="col-sm-5">
+            <div id="begin-form">
+                <div id="begin-form-tc1" class="row">
+                    <div class="col-sm-3">
                         <h6>Tempo Chegada Fila 1</h6>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-input const">
-                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="form-input const">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Tempo (s)">
+                                </div>
+                            </div>
+                            <div class="form-input expo hide">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                            </div>
+                            <div class="form-input normal hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Desvio Padrão">
+                                </div>
+                            </div>
+                            <div class="form-input triangular hide">
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Moda">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
+                            <div class="form-input uniform hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-input expo hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                        </div>
-                        <div class="form-input normal hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                            <input class="form-control" type="number" placeholder="Desvio Padrão">
-                        </div>
-                        <div class="form-input triangular hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Moda">
-                            <input class="form-control" type="number" placeholder="Max">
-                        </div>
-                        <div class="form-input uniform hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Max">
-                        </div>
-
                     </div>
                     <div class="col-sm-3">
                         <select>
@@ -99,29 +118,49 @@
                     </div>
                 </div>
 
-                <div id="begin-form-tc2">
-                    <div class="col-sm-5">
+                <div id="begin-form-tc2" class="row">
+                    <div class="col-sm-3">
                         <h6>Tempo Chegada Fila 2</h6>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-input const">
-                            <input class="form-control" type="number" placeholder="Tempo (s)">
-                        </div>
-                        <div class="form-input expo hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                        </div>
-                        <div class="form-input normal hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                            <input class="form-control" type="number" placeholder="Desvio Padrão">
-                        </div>
-                        <div class="form-input triangular hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Moda">
-                            <input class="form-control" type="number" placeholder="Max">
-                        </div>
-                        <div class="form-input uniform hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Max">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="form-input const">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Tempo (s)">
+                                </div>
+                            </div>
+                            <div class="form-input expo hide">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                            </div>
+                            <div class="form-input normal hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Desvio Padrão">
+                                </div>
+                            </div>
+                            <div class="form-input triangular hide">
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Moda">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
+                            <div class="form-input uniform hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-3">
@@ -136,29 +175,49 @@
                     </div>
                 </div>
 
-                <div id="begin-form-ts1">
-                    <div class="col-sm-5">
-                        <h6>Tempo Chegada Servidor 1</h6>
+                <div id="begin-form-ts1" class="row">
+                    <div class="col-sm-3">
+                        <h6>Tempo Serviço Servidor 1</h6>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-input const">
-                            <input class="form-control" type="number" placeholder="Tempo (s)">
-                        </div>
-                        <div class="form-input expo hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                        </div>
-                        <div class="form-input normal hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                            <input class="form-control" type="number" placeholder="Desvio Padrão">
-                        </div>
-                        <div class="form-input triangular hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Moda">
-                            <input class="form-control" type="number" placeholder="Max">
-                        </div>
-                        <div class="form-input uniform hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Max">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="form-input const">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Tempo (s)">
+                                </div>
+                            </div>
+                            <div class="form-input expo hide">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                            </div>
+                            <div class="form-input normal hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Desvio Padrão">
+                                </div>
+                            </div>
+                            <div class="form-input triangular hide">
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Moda">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
+                            <div class="form-input uniform hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-3">
@@ -172,29 +231,104 @@
                     </div>
                 </div>
 
-                <div id="begin-form-ts2">
-                    <div class="col-sm-5">
-                        <h6>Tempo Chegada Servidor 2</h6>
+                <div id="begin-form-ts2" class="row">
+                    <div class="col-sm-3">
+                        <h6>Tempo Serviço Servidor 2</h6>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-input const">
-                            <input class="form-control" type="number" placeholder="Tempo (s)">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="form-input const">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Tempo (s)">
+                                </div>
+                            </div>
+                            <div class="form-input expo hide">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                            </div>
+                            <div class="form-input normal hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Desvio Padrão">
+                                </div>
+                            </div>
+                            <div class="form-input triangular hide">
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Moda">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
+                            <div class="form-input uniform hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-input expo hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                        </div>
-                        <div class="form-input normal hide">
-                            <input class="form-control" type="number" placeholder="Média">
-                            <input class="form-control" type="number" placeholder="Desvio Padrão">
-                        </div>
-                        <div class="form-input triangular hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Moda">
-                            <input class="form-control" type="number" placeholder="Max">
-                        </div>
-                        <div class="form-input uniform hide">
-                            <input class="form-control" type="number" placeholder="Min">
-                            <input class="form-control" type="number" placeholder="Max">
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                            <option value="expo">Exponencial</option>
+                            <option value="normal">Normal</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="uniform">Uniforme</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="begin-form-time-fail" class="row">
+                    <div class="col-sm-3">
+                        <h6>Tempo de Falha Servidores</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="form-input const">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Tempo (s)">
+                                </div>
+                            </div>
+                            <div class="form-input expo hide">
+                                <div class="col-sm-12">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                            </div>
+                            <div class="form-input normal hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Média">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Desvio Padrão">
+                                </div>
+                            </div>
+                            <div class="form-input triangular hide">
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Moda">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
+                            <div class="form-input uniform hide">
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Min">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="number" placeholder="Max">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-3">
@@ -208,36 +342,20 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6">
-                    <h6>Tempo de Falha Servidores</h6>
+                <div id="begin-form-percentage-fail" class="row">
+                    <div class="col-sm-3">
+                        <h6>Porcentagem de Falha</h6>
+                    </div>
+                    <div class="col-sm-6">
+                        <input class="form-control" min="0" max="100" type="number" placeholder="%">
+                    </div>
+                    <div class="col-sm-3">
+                        <select>
+                            <option value="const">Constante</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" type="number" placeholder="Segundos">
-                </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
-                    </select>
-                </div>
-                <div class="col-sm-6">
-                    <h6>Porcentagem de Falha</h6>
-                </div>
-                <div class="col-sm-3">
-                    <input id="nplayer-input" class="form-control" min="0" max="100" type="number" placeholder="%">
-                </div>
-                <div class="col-sm-3">
-                    <select>
-                        <option value="const">Constante</option>
-                        <option value="expo">Exponencial</option>
-                        <option value="normal">Normal</option>
-                        <option value="triangular">Triangular</option>
-                        <option value="uniform">Uniforme</option>
-                    </select>
-                </div>
+
                 <div class="col-sm-12">
                     <button id="begin-button" class="btn btn-success">Começar</button>
                 </div>

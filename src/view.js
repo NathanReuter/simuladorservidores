@@ -20,9 +20,24 @@
         element.style.display = 'block';
     };
 
-    var bindFormListeners = function () {
-        var viewsIds = ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2'];
+    var getBeginFormData = function () {
+        var viewsIds = this.viewsIds;
+        var dataBlock = {};
 
+        _.forEach(viewsIds, function (id) {
+            var select = document.querySelectorAll(id.concat(' select'))[0],
+                inputs = document.querySelectorAll(id.concat(' .' + select.value  +' input')),
+                inputValues = _.map(inputs, function (input) {
+                    return input.value;
+                });
+
+            dataBlock[id] = {probType: select.value, values: inputValues};
+        });
+
+        return dataBlock;
+    };
+
+    var bindFormListeners = function (viewsIds) {
         _.forEach(viewsIds, function (id) {
             var input = document.querySelectorAll(id.concat(' input'))[0],
                 select = document.querySelectorAll(id.concat(' select'))[0],
@@ -40,7 +55,6 @@
             select.onchange = function () {
                 hideAllViews();
                 var selected = document.querySelector(id.concat(' .' + this.value));
-                console.log(selected);
 
                 selected.className = _.replace(selected.className, 'hide', '');
             };
@@ -48,9 +62,12 @@
     };
 
     var View = function () {
-        this.init = function () {
-            bindFormListeners();
+        this.init = function (viewsIds) {
+            this.viewsIds = viewsIds;
+            bindFormListeners(viewsIds);
         };
+
+        this.getBeginFormData = getBeginFormData;
     };
 
     module.exports = View;

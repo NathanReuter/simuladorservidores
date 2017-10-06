@@ -4,14 +4,19 @@
 	var Simulation = require('./simulation'),
         View = require('./view'),
         _ = require('lodash'),
-        ProbFunctions = require('./probFunctions');
+        ProbFunctions = require('./probFunctions'),
+        config = require('./config');
 
-    var init = function (view) {
-        view.init();
+	var simulationSettings = {};
+
+    var init = function (view, config) {
+        view.init(config.viewsIds);
         var beginButton = document.getElementById('begin-button');
 
         beginButton.onclick = function () {
-
+            simulationSettings = view.getBeginFormData();
+            console.log('begin', simulationSettings);
+        //    TODO USE Prob
         };
     };
 
@@ -19,5 +24,5 @@
 	window.view = new View();
 	window.prob = new ProbFunctions();
 
-	init(window.view);
+	init(window.view, config);
 })(window);

@@ -4,7 +4,6 @@
 	var Simulation = require('./simulation'),
         View = require('./view'),
         _ = require('lodash'),
-        ProbFunctions = require('./probFunctions'),
         config = require('./config');
 
 	var simulationSettings = {};
@@ -16,13 +15,12 @@
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
             console.log('begin', simulationSettings);
-        //    TODO USE Prob
+            window.simulation = new Simulation(simulationSettings);
+            window.simulation.init();
         };
     };
 
-	window.simulation = new Simulation();
 	window.view = new View();
-	window.prob = new ProbFunctions();
 
 	init(window.view, config);
 })(window);

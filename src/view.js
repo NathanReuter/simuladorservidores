@@ -29,9 +29,10 @@
                 inputs = document.querySelectorAll(id.concat(' .' + select.value  +' input')),
                 inputValues = _.map(inputs, function (input) {
                     return input.value;
-                });
+                }),
+                idName = id.split('-').pop();
 
-            dataBlock[id] = {probType: select.value, values: inputValues};
+            dataBlock[idName] = {probType: select.value, values: inputValues};
         });
 
         return dataBlock;

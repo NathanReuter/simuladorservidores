@@ -56,7 +56,7 @@
 
     /* Return an uniforme dist random number
      * @params min value and max value*/
-    probFunctions.prototype.uniforme = function (min, max) {
+    probFunctions.prototype.uniform = function (min, max) {
         // var u = Math.random();
         var u = Math.random();
 

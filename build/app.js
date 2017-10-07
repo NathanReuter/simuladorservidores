@@ -17093,32 +17093,34 @@
 	var Simulation = require('./simulation'),
         View = require('./view'),
         _ = require('lodash'),
-        ProbFunctions = require('./probFunctions'),
         config = require('./config');
+
+	var simulationSettings = {};
 
     var init = function (view, config) {
         view.init(config.viewsIds);
         var beginButton = document.getElementById('begin-button');
 
         beginButton.onclick = function () {
-            console.log('begin', view.getBeginFormData());
+            simulationSettings = view.getBeginFormData();
+            console.log('begin', simulationSettings);
+            window.simulation = new Simulation(simulationSettings);
+            window.simulation.init();
         };
     };
 
-	window.simulation = new Simulation();
 	window.view = new View();
-	window.prob = new ProbFunctions();
 
 	init(window.view, config);
 })(window);
-},{"./config":3,"./probFunctions":4,"./simulation":5,"./view":6,"lodash":1}],3:[function(require,module,exports){
+},{"./config":3,"./simulation":5,"./view":6,"lodash":1}],3:[function(require,module,exports){
 (function() {
 	'use strict';
 
 	var config = {
 		name: 'Simulador de Filas',
 		viewsIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
-			'#begin-form-percentage-fail', '#begin-form-time-fail']
+			'#begin-form-percentagefail', '#begin-form-timefail']
 	};
 
 	module.exports = config;
@@ -17182,7 +17184,7 @@
 
     /* Return an uniforme dist random number
      * @params min value and max value*/
-    probFunctions.prototype.uniforme = function (min, max) {
+    probFunctions.prototype.uniform = function (min, max) {
         // var u = Math.random();
         var u = Math.random();
 
@@ -17199,13 +17201,30 @@
 (function () {
     "use strict";
 
-    var Simulation = function () {
+    var ProbFunctions = require('./probFunctions');
 
+
+    var calculateArriveTime = function (settings, probFunction) {
+        return {
+            tc1: probFunction[settings.tc1.probType].apply(this, settings.tc1.values),
+            tc2: probFunction[settings.tc2.probType].apply(this, settings.tc2.values)
+        };
+    };
+
+    var Simulation = function (simulationSettings) {
+        this.settings = simulationSettings;
+        this.time = 0;
+        this.probFunctions = new ProbFunctions();
+    };
+
+    Simulation.prototype.init = function () {
+        var a = calculateArriveTime(this.settings, this.probFunctions);
+        console.log('a', a);
     };
 
     module.exports  = Simulation;
 })();
-},{}],6:[function(require,module,exports){
+},{"./probFunctions":4}],6:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */
@@ -17237,9 +17256,10 @@
                 inputs = document.querySelectorAll(id.concat(' .' + select.value  +' input')),
                 inputValues = _.map(inputs, function (input) {
                     return input.value;
-                });
+                }),
+                idName = id.split('-').pop();
 
-            dataBlock[id] = {probType: select.value, values: inputValues};
+            dataBlock[idName] = {probType: select.value, values: inputValues};
         });
 
         return dataBlock;

@@ -19,20 +19,23 @@
 
     };
 
-    var createEntity = function (tc, ts) {
+    var createEntity = function (times) {
+        // Select type by 50 % chance
+        var type = Math.floor(Math.random() * 2 + 1);
         this.sistemEntities++;
 
         return {
             id: this.sistemEntities,
-            tc: tc,
-            ts: ts
+            type: type,
+            tc: times['tc'.concat(type)],
+            ts:times['ts'.concat(type)]
         };
     };
 
     var setupFirstEntities = function () {
-        var initTimes = calculateNextTimes(this.settings, this.probFunctions);
-        this.eventList.push(createEntity.apply(this, [initTimes.tc1, initTimes.ts1]));
-        this.eventList.push(createEntity.apply(this, [initTimes.tc2, initTimes.ts2]));
+        var calculatedTimes = calculateNextTimes(this.settings, this.probFunctions);
+        this.eventList.push(createEntity.apply(this, [calculatedTimes]));
+        this.eventList.push(createEntity.apply(this, [calculatedTimes]));
         this.eventList.sort(function (entity1, entity2) {
             return entity1.tc < entity2;
         });

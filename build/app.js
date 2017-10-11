@@ -17103,7 +17103,7 @@
 
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
-            console.log('begin', simulationSettings);
+            simulationSettings.endcondition = {sistemEntitiesCount: 5};
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
         };
@@ -17113,7 +17113,7 @@
 
 	init(window.view, config);
 })(window);
-},{"./config":3,"./simulation":5,"./view":6,"lodash":1}],3:[function(require,module,exports){
+},{"./config":3,"./simulation":6,"./view":7,"lodash":1}],3:[function(require,module,exports){
 (function() {
 	'use strict';
 
@@ -17126,6 +17126,28 @@
 	module.exports = config;
 })();
 },{}],4:[function(require,module,exports){
+(function () {
+    "use strict";
+
+    var EventList = function () {
+        this.list = [];
+    };
+
+    EventList.prototype.addEvent = function (event) {
+        this.list.push(event);
+        this.list.sort(function (entity1, entity2) {
+            return entity1.tc < entity2.tc;
+        });
+    };
+
+    EventList.prototype.nextEvent = function () {
+        // Just get the head of the list
+        return this.list.shift();
+    };
+
+    module.exports = EventList;
+})();
+},{}],5:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -17194,63 +17216,76 @@
 
     module.exports = probFunctions;
 })();
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */
 (function () {
     "use strict";
 
-    var ProbFunctions = require('./probFunctions');
+    var ProbFunctions = require('./probFunctions'),
+        EventList =  require('./eventList');
 
-
-    var calculateNextTimes = function (settings, probFunction) {
-        return {
-            tc1: probFunction[settings.tc1.probType].apply(this, settings.tc1.values),
-            tc2: probFunction[settings.tc2.probType].apply(this, settings.tc2.values),
-            ts1: probFunction[settings.ts2.probType].apply(this, settings.ts2.values),
-            ts2: probFunction[settings.ts2.probType].apply(this, settings.ts2.values),
-            timefail: probFunction[settings.timefail.probType].apply(this, settings.timefail.values),
-            percentagefail: settings.ts2.values
+    var calculateProbTimes = function (settings, probFunction) {
+        return function (target) {
+            return probFunction[settings[target].probType].apply(this, settings[target].values);
         }
 
     };
+    var getProbTime;
 
-    var createEntity = function (tc, ts) {
-        this.sistemEntities++;
+    var createEntity = function () {
+        // Select entity type by 50 % chance
+        var type = Math.floor(Math.random() * 2 + 1),
+            arriveTime = getProbTime('tc'.concat(type));
+        this.sistemEntitiesCount++;
 
         return {
-            id: this.sistemEntities,
-            tc: tc,
-            ts: ts
+            id: this.sistemEntitiesCount,
+            type: type,
+            tc: Number(this.time) + Number(arriveTime)
         };
     };
 
     var setupFirstEntities = function () {
-        var initTimes = calculateNextTimes(this.settings, this.probFunctions);
-        this.eventList.push(createEntity.apply(this, [initTimes.tc1, initTimes.ts1]));
-        this.eventList.push(createEntity.apply(this, [initTimes.tc2, initTimes.ts2]));
-        this.eventList.sort(function (entity1, entity2) {
-            return entity1.tc < entity2;
-        });
+        getProbTime = calculateProbTimes(this.settings, this.probFunctions);
+        var firstEntity = createEntity.apply(this);
+        this.eventList.addEvent(firstEntity);
+    };
+
+    var eventLoopInit = function (endSimulationCB) {
+        var that = this;
+        while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
+            this.eventList.addEvent(createEntity.apply(that));
+            var currentEntity = this.eventList.nextEvent();
+            this.time = Number(currentEntity.tc);
+
+            debugger;
+        }
+
+        endSimulationCB('Final data');
     };
 
     var Simulation = function (simulationSettings) {
         this.settings = simulationSettings;
         this.time = 0;
-        this.sistemEntities = 0;
+        this.sistemEntitiesCount = 0;
         this.probFunctions = new ProbFunctions();
-        this.eventList = [];
+        this.eventList = new EventList();
+        this.endcondition = simulationSettings.endcondition;
     };
 
     Simulation.prototype.init = function () {
         setupFirstEntities.apply(this);
+        eventLoopInit.apply(this, [function (logOutput) {
+            console.log(logOutput);
+        }]);
         console.log('this.eventList', this.eventList);
     };
 
     module.exports  = Simulation;
 })();
-},{"./probFunctions":4}],6:[function(require,module,exports){
+},{"./eventList":4,"./probFunctions":5}],7:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */

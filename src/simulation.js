@@ -4,53 +4,66 @@
 (function () {
     "use strict";
 
-    var ProbFunctions = require('./probFunctions');
+    var ProbFunctions = require('./probFunctions'),
+        EventList =  require('./eventList');
 
-
-    var calculateNextTimes = function (settings, probFunction) {
-        return {
-            tc1: probFunction[settings.tc1.probType].apply(this, settings.tc1.values),
-            tc2: probFunction[settings.tc2.probType].apply(this, settings.tc2.values),
-            ts1: probFunction[settings.ts2.probType].apply(this, settings.ts2.values),
-            ts2: probFunction[settings.ts2.probType].apply(this, settings.ts2.values),
-            timefail: probFunction[settings.timefail.probType].apply(this, settings.timefail.values),
-            percentagefail: settings.ts2.values
+    var calculateProbTimes = function (settings, probFunction) {
+        return function (target) {
+            return probFunction[settings[target].probType].apply(this, settings[target].values);
         }
 
     };
+    var getProbTime;
 
-    var createEntity = function (times) {
-        // Select type by 50 % chance
-        var type = Math.floor(Math.random() * 2 + 1);
-        this.sistemEntities++;
+    var createEntity = function () {
+        // Select entity type by 50 % chance
+        var type = Math.floor(Math.random() * 2 + 1),
+            arriveTime = getProbTime('tc'.concat(type));
+        this.sistemEntitiesCount++;
 
         return {
-            id: this.sistemEntities,
+            id: this.sistemEntitiesCount,
             type: type,
-            tc: times['tc'.concat(type)],
-            ts:times['ts'.concat(type)]
+            tc: Number(this.time) + Number(arriveTime)
         };
     };
 
     var setupFirstEntities = function () {
-        var calculatedTimes = calculateNextTimes(this.settings, this.probFunctions);
-        this.eventList.push(createEntity.apply(this, [calculatedTimes]));
-        this.eventList.push(createEntity.apply(this, [calculatedTimes]));
-        this.eventList.sort(function (entity1, entity2) {
-            return entity1.tc < entity2;
-        });
+        getProbTime = calculateProbTimes(this.settings, this.probFunctions);
+        var firstEntity = createEntity.apply(this);
+        this.eventList.addEvent(firstEntity);
+    };
+
+    var eventLoopInit = function (endSimulationCB) {
+        var that = this;
+        var disposedEntites = [];
+        while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
+            this.eventList.addEvent(createEntity.apply(that));
+            var currentEntity = this.eventList.nextEvent();
+            this.time = Number(currentEntity.tc);
+            //Do something
+
+            disposedEntites.push(currentEntity);
+            debugger;
+        }
+
+        endSimulationCB(disposedEntites);
     };
 
     var Simulation = function (simulationSettings) {
         this.settings = simulationSettings;
         this.time = 0;
-        this.sistemEntities = 0;
+        this.sistemEntitiesCount = 0;
         this.probFunctions = new ProbFunctions();
-        this.eventList = [];
+        this.eventList = new EventList();
+        this.endcondition = simulationSettings.endcondition;
     };
 
     Simulation.prototype.init = function () {
         setupFirstEntities.apply(this);
+        eventLoopInit.apply(this, [function (logOutput) {
+            console.log(logOutput);
+        }]);
         console.log('this.eventList', this.eventList);
     };
 

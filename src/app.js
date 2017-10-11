@@ -14,7 +14,7 @@
 
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
-            console.log('begin', simulationSettings);
+            simulationSettings.endcondition = {sistemEntitiesCount: 5};
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
         };

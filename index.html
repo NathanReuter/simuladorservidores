@@ -12,7 +12,7 @@
             background: url(https://www.toptal.com/designers/subtlepatterns/patterns/cream_dust.png) repeat 0 0;
         }
         .title {
-            margin: 30px 0 60px;
+            margin: 24px 0 60px;
         }
 
         .container {
@@ -43,7 +43,7 @@
         }
 
         footer {
-            position: absolute;
+            position: fixed;
             right: 0;
             bottom: 0;
             left: 0;
@@ -58,10 +58,11 @@
 <body>
     <div class="container">
         <div class="text-center">
-            <img src="https://conceptdraw.com/a155c4/p154/preview/640/pict--server-cloud-round-icons-vector-stencils-library" width="150" alt="" style="border-radius: 50%;
+            <img src="https://conceptdraw.com/a155c4/p154/preview/640/pict--server-cloud-round-icons-vector-stencils-library" width="100" alt="" style="border-radius: 50%;
             border: 1px solid;">
             <h2 class="title">Simulador de Servidor</h2><div></div>
             <div id="begin-form">
+                <h5>Configurações Iniciais</h5>
                 <div id="begin-form-tc1" class="row">
                     <div class="col-sm-3">
                         <h6>Tempo Chegada Fila 1</h6>
@@ -355,14 +356,25 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <h5>Condição de parada</h5>
+                    <div class="col-sm-3">
+                        <h6>Número de Entidades:</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control" min="0" max="100" type="number" placeholder="%">
+                    </div>
+                    <div class="col-sm-3">
+                        <h6>Tempo de Simulação (s):</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control" min="0" max="100" type="number" placeholder="%">
+                    </div>
+                </div>
 
                 <div class="col-sm-12">
                     <button id="begin-button" class="btn btn-success">Começar</button>
                 </div>
-            </div>
-
-            <div id="game-view" style="display: none;">
-                <button class="btn btn-primary">Próxima Rodada</button>
             </div>
         </div>
     </div>

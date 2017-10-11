@@ -17255,15 +17255,17 @@
 
     var eventLoopInit = function (endSimulationCB) {
         var that = this;
+        var disposedEntites = [];
         while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
             this.eventList.addEvent(createEntity.apply(that));
             var currentEntity = this.eventList.nextEvent();
             this.time = Number(currentEntity.tc);
+            //Do something
 
-            debugger;
+            disposedEntites.push(currentEntity);
         }
 
-        endSimulationCB('Final data');
+        endSimulationCB(disposedEntites);
     };
 
     var Simulation = function (simulationSettings) {

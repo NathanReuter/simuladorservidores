@@ -27,6 +27,16 @@
             tc: Number(this.time) + Number(arriveTime)
         };
     };
+    
+    var createServer = function (type, maxQueue) {
+
+        return {
+            id: type,
+            ts: getProbTime('ts'.concat(type)),
+            queue: [],
+            available: true
+        }
+    };
 
     var setupFirstEntities = function () {
         getProbTime = calculateProbTimes(this.settings, this.probFunctions);
@@ -44,7 +54,6 @@
             //Do something
 
             disposedEntites.push(currentEntity);
-            debugger;
         }
 
         endSimulationCB(disposedEntites);
@@ -62,9 +71,8 @@
     Simulation.prototype.init = function () {
         setupFirstEntities.apply(this);
         eventLoopInit.apply(this, [function (logOutput) {
-            console.log(logOutput);
+            console.log('Logoutput:', logOutput);
         }]);
-        console.log('this.eventList', this.eventList);
     };
 
     module.exports  = Simulation;

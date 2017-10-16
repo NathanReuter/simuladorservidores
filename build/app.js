@@ -17133,16 +17133,22 @@
         this.list = [];
     };
 
-    EventList.prototype.addEvent = function (event) {
-        this.list.push(event);
-        this.list.sort(function (entity1, entity2) {
-            return entity1.tc < entity2.tc;
+    EventList.prototype.addEvent = function (time, event, params, context) {
+        this.list.push({time: time, event: event, params: params, context: context});
+        this.list.sort(function (event1, event2) {
+            return event1.time > event2.time;
         });
     };
 
     EventList.prototype.nextEvent = function () {
         // Just get the head of the list
-        return this.list.shift();
+        var eventObj = this.list.shift();
+
+        var returnData = {time: eventObj.time, eventName: eventObj.event.name,
+            returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
+
+        console.log('returnData', returnData);
+        return returnData;
     };
 
     module.exports = EventList;
@@ -17228,23 +17234,26 @@
 
     var calculateProbTimes = function (settings, probFunction) {
         return function (target) {
-            return probFunction[settings[target].probType].apply(this, settings[target].values);
+            return Number(probFunction[settings[target].probType].apply(this, settings[target].values));
         }
 
     };
     var getProbTime;
 
-    var createEntity = function () {
+    var createEntity = function (tc) {
         // Select entity type by 50 % chance
         var type = Math.floor(Math.random() * 2 + 1),
-            arriveTime = getProbTime('tc'.concat(type));
+            nextArriveTime = Number(this.time) + getProbTime('tc'.concat(type));
         this.sistemEntitiesCount++;
 
-        return {
+        var entity =  {
             id: this.sistemEntitiesCount,
             type: type,
-            tc: Number(this.time) + Number(arriveTime)
+            tc: Number(this.time) + Number(tc)
         };
+
+        this.eventList.addEvent(entity.tc, chooseServerByEntityTtype, [entity, console.log, console.log], this);
+        this.eventList.addEvent(nextArriveTime, createEntity, [nextArriveTime], this);
     };
     
     var createServer = function (type, maxQueue) {
@@ -17285,8 +17294,9 @@
 
     var setupFirstEntities = function () {
         getProbTime = calculateProbTimes(this.settings, this.probFunctions);
-        var firstEntity = createEntity.apply(this);
-        this.eventList.addEvent(firstEntity);
+        this.eventList.addEvent(this.time, createEntity, [this.time], this);
+        // var firstEntity = createEntity.apply(this);
+        // this.eventList.addEvent(firstEntity);
     };
 
     var chooseServerByEntityTtype = function (entity, successCB, errorCB) {
@@ -17309,22 +17319,13 @@
     var eventLoopInit = function (endSimulationCB) {
         var that = this;
         var disposedEntites = [];
+        // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
         while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
-            console.log('Clock: ', that.time);
-            this.eventList.addEvent(createEntity.apply(that));
+            debugger;
             // Get Current entity in event list
-            var currentEntity = this.eventList.nextEvent();
+            var currentEnvent = this.eventList.nextEvent();
             // Set simulation time to the entity arrive time
-            this.time = Number(currentEntity.tc);
-            //Choose server 
-            chooseServerByEntityTtype.apply(this, [currentEntity, function (entity) {
-                console.log('Success', entity);
-            }, function (err) {
-                console.log('Error', err);
-            }]);
-            //Do something
-
-            disposedEntites.push(currentEntity);
+            this.time = Number(currentEnvent.time);
         }
 
         endSimulationCB(disposedEntites);

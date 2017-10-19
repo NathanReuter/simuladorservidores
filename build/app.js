@@ -17098,12 +17098,13 @@
 	var simulationSettings = {};
 
     var init = function (view, config) {
-        view.init(config.viewsIds);
+        view.init(config);
         var beginButton = document.getElementById('begin-button');
 
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
-            simulationSettings.endcondition = {sistemEntitiesCount: 20};
+            simulationSettings.endcondition = view.getEndConditionForm();
+            debugger;
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
         };
@@ -17119,8 +17120,9 @@
 
 	var config = {
 		name: 'Simulador de Filas',
-		viewsIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
-			'#begin-form-percentagefail', '#begin-form-timefail']
+		viewInitalConfigIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
+			'#begin-form-percentagefail', '#begin-form-timefail'],
+		viewStopConditionIds: ['#begin-button-simtime', '#begin-button-maxentities']
 	};
 
 	module.exports = config;
@@ -17339,11 +17341,15 @@
         }
     };
 
+    var isSimulationEnd = function () {
+        return Number(this.endcondition.maxentities) === this.sistemEntitiesCount || this.time >= Number(this.endcondition.simtime);
+    };
+
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
         var that = this;
 
-        while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
+        while (!isSimulationEnd.apply(this)) {
             // Get Current entity in event list
             this.eventList.nextEvent(function (eventObj) {
                 // Set simulation time to the entity arrive time
@@ -17412,7 +17418,7 @@
     };
 
     var getBeginFormData = function () {
-        var viewsIds = this.viewsIds;
+        var viewsIds = this.viewInitalConfigIds;
         var dataBlock = {};
 
         _.forEach(viewsIds, function (id) {
@@ -17429,6 +17435,20 @@
         return dataBlock;
     };
 
+    var getEndConditionForm = function () {
+        var viewsIds = this.viewStopConditionIds;
+        var dataBlock = {};
+        _.forEach(viewsIds, function (id) {
+            var inputValue = document.querySelector(id).value;
+            var idName = id.split('-').pop();
+
+            console.log('inputValue', inputValue);
+
+            dataBlock[idName] = inputValue;
+        });
+
+        return dataBlock;
+    };
     var bindFormListeners = function (viewsIds) {
         _.forEach(viewsIds, function (id) {
             var input = document.querySelectorAll(id.concat(' input'))[0],
@@ -17454,12 +17474,14 @@
     };
 
     var View = function () {
-        this.init = function (viewsIds) {
-            this.viewsIds = viewsIds;
-            bindFormListeners(viewsIds);
+        this.init = function (config) {
+            this.viewInitalConfigIds = config.viewInitalConfigIds;
+            this.viewStopConditionIds = config.viewStopConditionIds;
+            bindFormListeners(this.viewInitalConfigIds);
         };
 
         this.getBeginFormData = getBeginFormData;
+        this.getEndConditionForm = getEndConditionForm;
     };
 
     module.exports = View;

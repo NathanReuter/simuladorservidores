@@ -21,7 +21,7 @@
     };
 
     var getBeginFormData = function () {
-        var viewsIds = this.viewsIds;
+        var viewsIds = this.viewInitalConfigIds;
         var dataBlock = {};
 
         _.forEach(viewsIds, function (id) {
@@ -38,6 +38,20 @@
         return dataBlock;
     };
 
+    var getEndConditionForm = function () {
+        var viewsIds = this.viewStopConditionIds;
+        var dataBlock = {};
+        _.forEach(viewsIds, function (id) {
+            var inputValue = document.querySelector(id).value;
+            var idName = id.split('-').pop();
+
+            console.log('inputValue', inputValue);
+
+            dataBlock[idName] = inputValue;
+        });
+
+        return dataBlock;
+    };
     var bindFormListeners = function (viewsIds) {
         _.forEach(viewsIds, function (id) {
             var input = document.querySelectorAll(id.concat(' input'))[0],
@@ -63,12 +77,14 @@
     };
 
     var View = function () {
-        this.init = function (viewsIds) {
-            this.viewsIds = viewsIds;
-            bindFormListeners(viewsIds);
+        this.init = function (config) {
+            this.viewInitalConfigIds = config.viewInitalConfigIds;
+            this.viewStopConditionIds = config.viewStopConditionIds;
+            bindFormListeners(this.viewInitalConfigIds);
         };
 
         this.getBeginFormData = getBeginFormData;
+        this.getEndConditionForm = getEndConditionForm;
     };
 
     module.exports = View;

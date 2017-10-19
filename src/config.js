@@ -3,8 +3,9 @@
 
 	var config = {
 		name: 'Simulador de Filas',
-		viewsIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
-			'#begin-form-percentagefail', '#begin-form-timefail']
+		viewInitalConfigIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
+			'#begin-form-percentagefail', '#begin-form-timefail'],
+		viewStopConditionIds: ['#begin-button-simtime', '#begin-button-maxentities']
 	};
 
 	module.exports = config;

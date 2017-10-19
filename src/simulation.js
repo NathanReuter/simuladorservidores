@@ -118,11 +118,15 @@
         }
     };
 
+    var isSimulationEnd = function () {
+        return Number(this.endcondition.maxentities) === this.sistemEntitiesCount || this.time >= Number(this.endcondition.simtime);
+    };
+
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
         var that = this;
 
-        while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
+        while (!isSimulationEnd.apply(this)) {
             // Get Current entity in event list
             this.eventList.nextEvent(function (eventObj) {
                 // Set simulation time to the entity arrive time

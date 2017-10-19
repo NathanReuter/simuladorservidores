@@ -17103,7 +17103,7 @@
 
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
-            simulationSettings.endcondition = {sistemEntitiesCount: 5};
+            simulationSettings.endcondition = {sistemEntitiesCount: 20};
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
         };
@@ -17140,15 +17140,11 @@
         });
     };
 
-    EventList.prototype.nextEvent = function () {
+    EventList.prototype.nextEvent = function (callback) {
         // Just get the head of the list
         var eventObj = this.list.shift();
 
-        var returnData = {time: eventObj.time, eventName: eventObj.event.name,
-            returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
-
-        console.log('returnData', returnData);
-        return returnData;
+        callback(eventObj);
     };
 
     module.exports = EventList;
@@ -17243,7 +17239,8 @@
     var createEntity = function (tc) {
         // Select entity type by 50 % chance
         var type = Math.floor(Math.random() * 2 + 1),
-            nextArriveTime = Number(this.time) + getProbTime('tc'.concat(type));
+            nextArriveTime = Number(this.time) + getProbTime('tc'.concat(type)),
+            that = this;
         this.sistemEntitiesCount++;
 
         var entity =  {
@@ -17252,19 +17249,24 @@
             tc: Number(this.time) + Number(tc)
         };
 
-        this.eventList.addEvent(entity.tc, chooseServerByEntityTtype, [entity, console.log, console.log], this);
+        // Fix after free server cb, to add the new entity to freeServer Event
+        this.eventList.addEvent(entity.tc, chooseServerByEntityType, [entity], this);
         this.eventList.addEvent(nextArriveTime, createEntity, [nextArriveTime], this);
     };
     
-    var createServer = function (type, maxQueue) {
+    var createServer = function (type, maxQueue, simulation) {
         var Server = function () {
             this.id = type;
             this.queue = [];
             this.isAvailable = true;
             this.maxQueue = maxQueue || Number.MAX_VALUE;
+            this.sim = simulation;
         };
 
-        Server.prototype.tryToUse = function (entity, success, fail) {
+        Server.prototype.isFull = function () {
+            return this.queue.length > this.maxQueue;
+        };
+        Server.prototype.tryToUse = function (entity) {
             if (this.isAvailable) {
                 this.isAvailable = false;
                 entity.server = {
@@ -17272,21 +17274,32 @@
                     ts: getProbTime('ts'.concat(type))
                 };
 
-                success(entity)
+                // Add free server resource event after success
+                this.sim.eventList.addEvent((this.sim.time + entity.server.ts), this.freeServer, [entity] ,this);
             } else {
                 if (this.queue.length <= this.maxQueue) {
+                    entity.status = {
+                        waiting: 'Server '.concat(this.id)
+                    };
+
                     this.queue.push(entity);
-                    fail({state: 'waiting', msg: 'Unavailable Resource'});
-                } else {
-                    fail({state: 'disposed', msg: 'Max Queue Reached'});
                 }
             }
         };
 
-        Server.prototype.freeServer = function () {
+        Server.prototype.freeServer = function freeServer(entity) {
             this.isAvailable = true;
+            entity.status = {
+                done: true,
+                time: this.sim.time
+            };
+            this.sim.disposedEntities.push(entity);
 
-            return this.queue.shift()
+            var nextEntity =  this.queue.shift();
+
+            if (nextEntity) {
+                this.sim.eventList.addEvent(nextEntity.tc, this.tryToUse, [nextEntity], this);
+            }
         };
 
         return new Server();
@@ -17299,36 +17312,59 @@
         // this.eventList.addEvent(firstEntity);
     };
 
-    var chooseServerByEntityTtype = function (entity, successCB, errorCB) {
+    var chooseServerByEntityType = function (entity) {
         var that = this;
+
+        if (that.serverOne.isFull() && that.serverTwo.isFull()) {
+            entity.status = {
+                disposed: 'Servers Full',
+                time: that.time
+            };
+
+            return that.disposedEntities.push(entity);
+        }
 
         if (entity.type === 1) {
-            that.serverOne.tryToUse(entity, successCB, function (error) {
-                if (error.state === 'waiting') {
-                    that.serverTwo.tryToUse(entity, successCB, errorCB)
-                }
-            });
+            if (!that.serverOne.isFull()) {
+                that.serverOne.tryToUse(entity);
+            } else {
+                that.serverTwo.tryToUse(entity);
+            }
         } else {
-            that.serverTwo.tryToUse(entity, successCB, function (error) {
-                if (error.state === 'waiting') {
-                    that.serverOne.tryToUse(entity, successCB, errorCB)
-                }
-            });
+            if (!that.serverTwo.isFull()) {
+                that.serverTwo.tryToUse(entity);
+            } else {
+                that.serverOne.tryToUse(entity);
+            }
         }
     };
+
     var eventLoopInit = function (endSimulationCB) {
-        var that = this;
-        var disposedEntites = [];
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
+        var that = this;
+
         while (this.endcondition.sistemEntitiesCount !== this.sistemEntitiesCount) {
-            debugger;
             // Get Current entity in event list
-            var currentEnvent = this.eventList.nextEvent();
-            // Set simulation time to the entity arrive time
-            this.time = Number(currentEnvent.time);
+            this.eventList.nextEvent(function (eventObj) {
+                // Set simulation time to the entity arrive time
+                that.time = eventObj.time;
+
+                var returnData = {time: eventObj.time, eventName: eventObj.event.name,
+                    returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
+            });
+
         }
 
-        endSimulationCB(disposedEntites);
+        endSimulationCB(this);
+    };
+
+    var finalLog = function (simulation) {
+        console.log('Total de Entidades: ', simulation.sistemEntitiesCount);
+        console.log('Total de Entidades Dispensadas: ', simulation.disposedEntities.length);
+        console.log('Total de Entidades Dispensadas Completadas: ', simulation.disposedEntities.filter(entity => entity.server).length);
+        console.log('Total de tempo de Simulação: ', simulation.time, 'segundos');
+        console.log('Entidades na fila servidor 1: ', simulation.serverOne.queue.length);
+        console.log('Entidades na fila servidor 2: ', simulation.serverTwo.queue.length);
     };
 
     var Simulation = function (simulationSettings) {
@@ -17338,14 +17374,15 @@
         this.probFunctions = new ProbFunctions();
         this.eventList = new EventList();
         this.endcondition = simulationSettings.endcondition;
-        this.serverOne = createServer('1');
-        this.serverTwo = createServer('2');
+        this.serverOne = createServer('1', undefined, this);
+        this.serverTwo = createServer('2', undefined, this);
+        this.disposedEntities = [];
     };
 
     Simulation.prototype.init = function () {
         setupFirstEntities.apply(this);
-        eventLoopInit.apply(this, [function (logOutput) {
-            // console.log('Logoutput:', logOutput);
+        eventLoopInit.apply(this, [function (sim) {
+            finalLog(sim);
         }]);
     };
 

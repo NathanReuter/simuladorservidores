@@ -12,15 +12,11 @@
         });
     };
 
-    EventList.prototype.nextEvent = function () {
+    EventList.prototype.nextEvent = function (callback) {
         // Just get the head of the list
         var eventObj = this.list.shift();
 
-        var returnData = {time: eventObj.time, eventName: eventObj.event.name,
-            returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
-
-        console.log('returnData', returnData);
-        return returnData;
+        callback(eventObj);
     };
 
     module.exports = EventList;

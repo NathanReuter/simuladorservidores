@@ -41,6 +41,7 @@
     var getEndConditionForm = function () {
         var viewsIds = this.viewStopConditionIds;
         var dataBlock = {};
+
         _.forEach(viewsIds, function (id) {
             var inputValue = document.querySelector(id).value;
             var idName = id.split('-').pop();
@@ -51,6 +52,12 @@
         });
 
         return dataBlock;
+    };
+
+    var getSimulationSpeed = function () {
+        var radioInput = document.querySelector('input[name="sim-speed-radio"]:checked');
+
+        return (radioInput && radioInput.value) || 0
     };
     var bindFormListeners = function (viewsIds) {
         _.forEach(viewsIds, function (id) {
@@ -81,6 +88,35 @@
         showElement(this.simViewId);
     };
 
+    var updateView = function (modelData) {
+        var statisticsId = '#statistics',
+            sections = ['.basic-info'],
+            statusLabel = '#sim-status',
+            statusColor = {
+                running: 'green-text',
+                finished: 'red-text',
+                stoped: 'yellow-text'
+            },
+            setStatusText = function () {
+                document.querySelector(statusLabel.concat(' span')).className = statusColor[modelData.simulationStatus];
+                document.querySelector(statusLabel.concat(' span')).innerText = modelData.simulationStatus.toUpperCase();
+            };
+
+        setStatusText();
+        _.forEach(sections, function (section) {
+            _.forIn(modelData, function (value, key) {
+                var referenceData = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+                var element = document.querySelector(statisticsId.concat(' ' + section).concat(' [data-info=' + referenceData) + ']');
+
+                if (element) {
+                    element.querySelector('span').innerText = value;
+                }
+            });
+
+
+        });
+    };
+
     var View = function () {
         this.init = function (config) {
             this.viewInitalConfigIds = config.viewInitalConfigIds;
@@ -94,6 +130,8 @@
         this.getBeginFormData = getBeginFormData;
         this.getEndConditionForm = getEndConditionForm;
         this.showSimulationView = showSimulationView;
+        this.updateView = updateView;
+        this.getSimulationSpeed = getSimulationSpeed;
     };
 
     module.exports = View;

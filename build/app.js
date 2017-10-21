@@ -17105,10 +17105,15 @@
             simulationSettings = view.getBeginFormData();
             simulationSettings.endcondition = view.getEndConditionForm();
             simulationSettings.endcondition.simtime = simulationSettings.endcondition.simtime || config.mimSimTime;
+            simulationSettings.simSpeed = view.getSimulationSpeed();
             view.showSimulationView();
             window.simulation = new Simulation(simulationSettings);
-            window.simulation.init();
-
+            window.simulation.init(function beforeRun(simulation) {
+                //    SetupCallbacks Events
+                simulation.updateView = function (simulationData) {
+                    view.updateView(simulationData);
+                }
+            });
         };
     };
 
@@ -17231,7 +17236,8 @@
     "use strict";
 
     var ProbFunctions = require('./probFunctions'),
-        EventList =  require('./eventList');
+        EventList =  require('./eventList'),
+        _ = require('lodash');
 
     var calculateProbTimes = function (settings, probFunction) {
         return function (target) {
@@ -17345,27 +17351,36 @@
     };
 
     var isSimulationEnd = function () {
-        return (this.endcondition.maxentities &&Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
+        return (this.endcondition.maxentities && Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
             this.time >= Number(this.endcondition.simtime);
     };
 
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
-        var that = this;
+        var that = this,
+            eventLoop = function () {
+                _.delay(function () {
+                    that.status = 'running';
+                    // Get Current entity in event list
+                    that.eventList.nextEvent(function (eventObj) {
+                        // Set simulation time to the entity arrive time
+                        that.time = eventObj.time;
 
-        while (!isSimulationEnd.apply(this)) {
-            // Get Current entity in event list
-            this.eventList.nextEvent(function (eventObj) {
-                // Set simulation time to the entity arrive time
-                that.time = eventObj.time;
+                        var returnData = {time: eventObj.time, eventName: eventObj.event.name,
+                            returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
+                    });
+                    updateView.apply(that);
 
-                var returnData = {time: eventObj.time, eventName: eventObj.event.name,
-                    returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
-            });
+                    if (!isSimulationEnd.apply(that)) {
+                        eventLoop();
+                    } else {
+                        that.status = 'finished';
+                        endSimulationCB(this);
+                    }
+                }, that.simSpeed);
+            };
 
-        }
-
-        endSimulationCB(this);
+        eventLoop();
     };
 
     var finalLog = function (simulation) {
@@ -17375,6 +17390,12 @@
         console.log('Total de tempo de Simulação: ', simulation.time, 'segundos');
         console.log('Entidades na fila servidor 1: ', simulation.serverOne.queue.length);
         console.log('Entidades na fila servidor 2: ', simulation.serverTwo.queue.length);
+    };
+
+    var updateView = function () {
+        if (typeof this.updateView === 'function') {
+            this.updateView(this.getSimulationData());
+        }
     };
 
     var Simulation = function (simulationSettings) {
@@ -17387,18 +17408,38 @@
         this.serverOne = createServer('1', undefined, this);
         this.serverTwo = createServer('2', undefined, this);
         this.disposedEntities = [];
+        this.status = 'stoped';
+        this.simSpeed = simulationSettings.simSpeed;
     };
 
-    Simulation.prototype.init = function () {
+    Simulation.prototype.getSimulationData = function () {
+        var simulation = this;
+        var totalCompletedDisposedEntities = simulation.disposedEntities.filter(entity => entity.server).length;
+
+        return {
+            currentSimulationTime: simulation.time,
+            simulationStatus: simulation.status,
+            totalEntities: simulation.sistemEntitiesCount,
+            totalDisposedEntities: simulation.disposedEntities.length,
+            totalCompletedDisposedEntities: totalCompletedDisposedEntities,
+            entitiesOnServer1: simulation.serverOne.queue.length,
+            entitiesOnServer2: simulation.serverTwo.queue.length
+        };
+    };
+
+    Simulation.prototype.init = function (beforeRun, onFinish) {
+        var that = this;
         setupFirstEntities.apply(this);
+        beforeRun(this);
         eventLoopInit.apply(this, [function (sim) {
+            updateView.apply(that);
             finalLog(sim);
         }]);
     };
 
     module.exports  = Simulation;
 })();
-},{"./eventList":4,"./probFunctions":5}],7:[function(require,module,exports){
+},{"./eventList":4,"./probFunctions":5,"lodash":1}],7:[function(require,module,exports){
 /**
  * Created by nathangodinho on 08/04/17.
  */
@@ -17442,6 +17483,7 @@
     var getEndConditionForm = function () {
         var viewsIds = this.viewStopConditionIds;
         var dataBlock = {};
+
         _.forEach(viewsIds, function (id) {
             var inputValue = document.querySelector(id).value;
             var idName = id.split('-').pop();
@@ -17452,6 +17494,12 @@
         });
 
         return dataBlock;
+    };
+
+    var getSimulationSpeed = function () {
+        var radioInput = document.querySelector('input[name="sim-speed-radio"]:checked');
+
+        return (radioInput && radioInput.value) || 0
     };
     var bindFormListeners = function (viewsIds) {
         _.forEach(viewsIds, function (id) {
@@ -17482,6 +17530,35 @@
         showElement(this.simViewId);
     };
 
+    var updateView = function (modelData) {
+        var statisticsId = '#statistics',
+            sections = ['.basic-info'],
+            statusLabel = '#sim-status',
+            statusColor = {
+                running: 'green-text',
+                finished: 'red-text',
+                stoped: 'yellow-text'
+            },
+            setStatusText = function () {
+                document.querySelector(statusLabel.concat(' span')).className = statusColor[modelData.simulationStatus];
+                document.querySelector(statusLabel.concat(' span')).innerText = modelData.simulationStatus.toUpperCase();
+            };
+
+        setStatusText();
+        _.forEach(sections, function (section) {
+            _.forIn(modelData, function (value, key) {
+                var referenceData = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+                var element = document.querySelector(statisticsId.concat(' ' + section).concat(' [data-info=' + referenceData) + ']');
+
+                if (element) {
+                    element.querySelector('span').innerText = value;
+                }
+            });
+
+
+        });
+    };
+
     var View = function () {
         this.init = function (config) {
             this.viewInitalConfigIds = config.viewInitalConfigIds;
@@ -17495,6 +17572,8 @@
         this.getBeginFormData = getBeginFormData;
         this.getEndConditionForm = getEndConditionForm;
         this.showSimulationView = showSimulationView;
+        this.updateView = updateView;
+        this.getSimulationSpeed = getSimulationSpeed;
     };
 
     module.exports = View;

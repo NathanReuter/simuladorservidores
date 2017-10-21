@@ -59,8 +59,22 @@
             text-align: left;
         }
 
+        .basic-info span {
+            font-weight: 700;
+            color: cornflowerblue;
+            padding-left: 20px;
+        }
+
         .red-text {
             color: darkred;
+        }
+
+        .green-text {
+            color: green;
+        }
+
+        .yellow-text {
+            color: yellow;
         }
 
         .buttons-box {
@@ -72,6 +86,12 @@
 
         .buttons-box button {
             font-size: xx-large;
+        }
+
+        .form-control {
+            margin: 0 auto;
+            margin-bottom: 5px;
+            max-width: 250px;
         }
     </style>
 </head>
@@ -393,26 +413,50 @@
                         <input id="begin-button-simtime" class="form-control" min="0" max="100" type="number" placeholder="%">
                     </div>
                 </div>
-
+                <hr>
+                <div class="row">
+                    <h5 class="section-header"><i class="fa fa-tachometer" aria-hidden="true"></i> Velocidade da Simulação</h5>
+                    <div class="col-sm-3">
+                        <div class="radio">
+                            <label><input type="radio" value="0" name="sim-speed-radio">Sem Animação</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="radio">
+                            <label><input type="radio" checked value="50" name="sim-speed-radio">Rápida</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="radio">
+                            <label><input type="radio" value="150" name="sim-speed-radio">Média</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="radio">
+                            <label><input type="radio" value="300" name="sim-speed-radio"git s>Lenta</label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
                 <div class="col-sm-12">
                     <button id="begin-button" class="btn btn-success">Começar</button>
                 </div>
             </div>
             <div id="sim-view">
-                <h4 class="">Estatus: <span class="red-text">Fim Simulação</span></h4>
+                <h4 id="sim-status">Estatus: <span>Fim Simulação</span></h4>
                 <div class="row">
                     <div class="col-sm-8">
                         <div id="statistics">
 
-                            <div class="basic-info">
+                            <section class="basic-info">
                                 <h5 class="section-header"><i class="fa fa-line-chart" aria-hidden="true"></i> Dados Gerais</h5>
-                                <h6>Total de Entidades: <span></span></h6>
-                                <h6>Total de Entidades Dispensadas: <span></span></h6>
-                                <h6>Total de Entidades Dispensadas Completadas: <span></span></h6>
-                                <h6>Total de Tempo de Simulação: <span></span></h6>
-                                <h6>Entidades na file do Servidor 1:  <span></span></h6>
-                                <h6>Entidades na file do Servidor 2:  <span></span></h6>
-                            </div>
+                                <h6 data-info="total-entities">Total de Entidades: <span></span></h6>
+                                <h6 data-info="total-disposed-entities">Total de Entidades Dispensadas: <span></span></h6>
+                                <h6 data-info="total-completed-disposed-entities">Total de Entidades Dispensadas Completadas: <span></span></h6>
+                                <h6 data-info="current-simulation-time">Total de Tempo de Simulação: <span></span></h6>
+                                <h6 data-info="entities-on-server1">Entidades na file do Servidor 1:  <span></span></h6>
+                                <h6 data-info="entities-on-server2">Entidades na file do Servidor 2:  <span></span></h6>
+                            </section>
                         </div>
                     </div>
                     <div class="col-sm-4">

@@ -5,7 +5,8 @@
     "use strict";
 
     var ProbFunctions = require('./probFunctions'),
-        EventList =  require('./eventList');
+        EventList =  require('./eventList'),
+        _ = require('lodash');
 
     var calculateProbTimes = function (settings, probFunction) {
         return function (target) {
@@ -119,27 +120,36 @@
     };
 
     var isSimulationEnd = function () {
-        return (this.endcondition.maxentities &&Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
+        return (this.endcondition.maxentities && Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
             this.time >= Number(this.endcondition.simtime);
     };
 
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
-        var that = this;
+        var that = this,
+            eventLoop = function () {
+                _.delay(function () {
+                    that.status = 'running';
+                    // Get Current entity in event list
+                    that.eventList.nextEvent(function (eventObj) {
+                        // Set simulation time to the entity arrive time
+                        that.time = eventObj.time;
 
-        while (!isSimulationEnd.apply(this)) {
-            // Get Current entity in event list
-            this.eventList.nextEvent(function (eventObj) {
-                // Set simulation time to the entity arrive time
-                that.time = eventObj.time;
+                        var returnData = {time: eventObj.time, eventName: eventObj.event.name,
+                            returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
+                    });
+                    updateView.apply(that);
 
-                var returnData = {time: eventObj.time, eventName: eventObj.event.name,
-                    returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
-            });
+                    if (!isSimulationEnd.apply(that)) {
+                        eventLoop();
+                    } else {
+                        that.status = 'finished';
+                        endSimulationCB(this);
+                    }
+                }, that.simSpeed);
+            };
 
-        }
-
-        endSimulationCB(this);
+        eventLoop();
     };
 
     var finalLog = function (simulation) {
@@ -149,6 +159,12 @@
         console.log('Total de tempo de Simulação: ', simulation.time, 'segundos');
         console.log('Entidades na fila servidor 1: ', simulation.serverOne.queue.length);
         console.log('Entidades na fila servidor 2: ', simulation.serverTwo.queue.length);
+    };
+
+    var updateView = function () {
+        if (typeof this.updateView === 'function') {
+            this.updateView(this.getSimulationData());
+        }
     };
 
     var Simulation = function (simulationSettings) {
@@ -161,11 +177,31 @@
         this.serverOne = createServer('1', undefined, this);
         this.serverTwo = createServer('2', undefined, this);
         this.disposedEntities = [];
+        this.status = 'stoped';
+        this.simSpeed = simulationSettings.simSpeed;
     };
 
-    Simulation.prototype.init = function () {
+    Simulation.prototype.getSimulationData = function () {
+        var simulation = this;
+        var totalCompletedDisposedEntities = simulation.disposedEntities.filter(entity => entity.server).length;
+
+        return {
+            currentSimulationTime: simulation.time,
+            simulationStatus: simulation.status,
+            totalEntities: simulation.sistemEntitiesCount,
+            totalDisposedEntities: simulation.disposedEntities.length,
+            totalCompletedDisposedEntities: totalCompletedDisposedEntities,
+            entitiesOnServer1: simulation.serverOne.queue.length,
+            entitiesOnServer2: simulation.serverTwo.queue.length
+        };
+    };
+
+    Simulation.prototype.init = function (beforeRun, onFinish) {
+        var that = this;
         setupFirstEntities.apply(this);
+        beforeRun(this);
         eventLoopInit.apply(this, [function (sim) {
+            updateView.apply(that);
             finalLog(sim);
         }]);
     };

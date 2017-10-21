@@ -119,7 +119,8 @@
     };
 
     var isSimulationEnd = function () {
-        return Number(this.endcondition.maxentities) === this.sistemEntitiesCount || this.time >= Number(this.endcondition.simtime);
+        return (this.endcondition.maxentities &&Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
+            this.time >= Number(this.endcondition.simtime);
     };
 
     var eventLoopInit = function (endSimulationCB) {

@@ -5,10 +5,12 @@
     <title>Simulador de Servidor</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
         body {
-            font-family: 'Press Start 2P', cursive,  Georgia, Times, serif;
+            font-family: 'Lato', cursive,  Georgia, Times, serif;
             background: url(https://www.toptal.com/designers/subtlepatterns/patterns/cream_dust.png) repeat 0 0;
         }
         .title {
@@ -24,11 +26,10 @@
             width: 300px;
         }
 
-        #nplayer-input {
-            font-size: 9px;
-            margin: 5px 0;
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
         }
-
         #begin-form {
             /*width: 600px;*/
             margin: 0 auto;
@@ -53,6 +54,25 @@
             font-size: 9px;
             color: white;
         }
+
+        .basic-info {
+            text-align: left;
+        }
+
+        .red-text {
+            color: darkred;
+        }
+
+        .buttons-box {
+            border: 5px solid #ababab;
+            border-radius: 5px;
+            width: fit-content;
+            padding: 10px;
+        }
+
+        .buttons-box button {
+            font-size: xx-large;
+        }
     </style>
 </head>
 <body>
@@ -63,7 +83,7 @@
             <h2 class="title">Simulador de Servidor</h2><div></div>
             <hr>
             <div id="begin-form">
-                <h5>Configurações Iniciais</h5>
+                <h5 class="section-header"><i class="fa fa-cog" aria-hidden="true"></i> Configurações Iniciais</h5>
                 <div id="begin-form-tc1" class="row">
                     <div class="col-sm-3">
                         <h6>Tempo Chegada Fila 1</h6>
@@ -359,7 +379,7 @@
                 </div>
                 <hr>
                 <div class="row">
-                    <h5>Condição de parada</h5>
+                    <h5 class="section-header"><i class="fa fa-hand-paper-o" aria-hidden="true"></i> Condição de parada</h5>
                     <div class="col-sm-3">
                         <h6>Máximo de Entidades:</h6>
                     </div>
@@ -376,6 +396,35 @@
 
                 <div class="col-sm-12">
                     <button id="begin-button" class="btn btn-success">Começar</button>
+                </div>
+            </div>
+            <div id="sim-view">
+                <h4 class="">Estatus: <span class="red-text">Fim Simulação</span></h4>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div id="statistics">
+
+                            <div class="basic-info">
+                                <h5 class="section-header"><i class="fa fa-line-chart" aria-hidden="true"></i> Dados Gerais</h5>
+                                <h6>Total de Entidades: <span></span></h6>
+                                <h6>Total de Entidades Dispensadas: <span></span></h6>
+                                <h6>Total de Entidades Dispensadas Completadas: <span></span></h6>
+                                <h6>Total de Tempo de Simulação: <span></span></h6>
+                                <h6>Entidades na file do Servidor 1:  <span></span></h6>
+                                <h6>Entidades na file do Servidor 2:  <span></span></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div id="controls">
+                            <h6 class="section-header text-left">Controles</h6>
+                            <div class="buttons-box">
+                                <button class="btn"><i class="fa fa-stop-circle-o" aria-hidden="true"></i></button>
+                                <button class="btn btn-success"><i class="fa fa-play-circle" aria-hidden="true"></i></i></button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -76,15 +76,24 @@
         });
     };
 
+    var showSimulationView = function () {
+        hideElement(this.initalFormId);
+        showElement(this.simViewId);
+    };
+
     var View = function () {
         this.init = function (config) {
             this.viewInitalConfigIds = config.viewInitalConfigIds;
             this.viewStopConditionIds = config.viewStopConditionIds;
+            this.initalFormId = 'begin-form';
+            this.simViewId = 'sim-view';
             bindFormListeners(this.viewInitalConfigIds);
+            hideElement(this.simViewId);
         };
 
         this.getBeginFormData = getBeginFormData;
         this.getEndConditionForm = getEndConditionForm;
+        this.showSimulationView = showSimulationView;
     };
 
     module.exports = View;

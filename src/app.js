@@ -15,9 +15,11 @@
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
             simulationSettings.endcondition = view.getEndConditionForm();
-            debugger;
+            simulationSettings.endcondition.simtime = simulationSettings.endcondition.simtime || config.mimSimTime;
+            view.showSimulationView();
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
+
         };
     };
 

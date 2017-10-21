@@ -17104,9 +17104,11 @@
         beginButton.onclick = function () {
             simulationSettings = view.getBeginFormData();
             simulationSettings.endcondition = view.getEndConditionForm();
-            debugger;
+            simulationSettings.endcondition.simtime = simulationSettings.endcondition.simtime || config.mimSimTime;
+            view.showSimulationView();
             window.simulation = new Simulation(simulationSettings);
             window.simulation.init();
+
         };
     };
 
@@ -17122,7 +17124,8 @@
 		name: 'Simulador de Filas',
 		viewInitalConfigIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
 			'#begin-form-percentagefail', '#begin-form-timefail'],
-		viewStopConditionIds: ['#begin-button-simtime', '#begin-button-maxentities']
+		viewStopConditionIds: ['#begin-button-simtime', '#begin-button-maxentities'],
+		mimSimTime: 500
 	};
 
 	module.exports = config;
@@ -17342,7 +17345,8 @@
     };
 
     var isSimulationEnd = function () {
-        return Number(this.endcondition.maxentities) === this.sistemEntitiesCount || this.time >= Number(this.endcondition.simtime);
+        return (this.endcondition.maxentities &&Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
+            this.time >= Number(this.endcondition.simtime);
     };
 
     var eventLoopInit = function (endSimulationCB) {
@@ -17473,15 +17477,24 @@
         });
     };
 
+    var showSimulationView = function () {
+        hideElement(this.initalFormId);
+        showElement(this.simViewId);
+    };
+
     var View = function () {
         this.init = function (config) {
             this.viewInitalConfigIds = config.viewInitalConfigIds;
             this.viewStopConditionIds = config.viewStopConditionIds;
+            this.initalFormId = 'begin-form';
+            this.simViewId = 'sim-view';
             bindFormListeners(this.viewInitalConfigIds);
+            hideElement(this.simViewId);
         };
 
         this.getBeginFormData = getBeginFormData;
         this.getEndConditionForm = getEndConditionForm;
+        this.showSimulationView = showSimulationView;
     };
 
     module.exports = View;

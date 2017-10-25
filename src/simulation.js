@@ -160,10 +160,6 @@
                         // Set simulation time to the entity arrive time
                         that.time = eventObj.time;
 
-                        if (eventObj.event.name === undefined || eventObj.event.name === '') {
-                            debugger;
-                        }
-
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
 
@@ -199,7 +195,6 @@
     };
 
     var Simulation = function (simulationSettings) {
-        debugger;
         this.settings = simulationSettings;
         this.time = 0;
         this.sistemEntitiesCount = 0;

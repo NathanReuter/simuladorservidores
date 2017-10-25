@@ -32,10 +32,18 @@
                 }),
                 idName = id.split('-').pop();
 
+            if (inputValues[0] === '') {
+                dataBlock.filedValidationFailed = true;
+            }
+
             dataBlock[idName] = {probType: select.value, values: inputValues};
         });
 
         return dataBlock;
+    };
+
+    var viewAlert = function (info) {
+        alert(info);
     };
 
     var getEndConditionForm = function () {
@@ -102,7 +110,6 @@
     };
 
     var updateView = function (modelData) {
-        console.log('modelData', modelData);
         var statisticsId = '#statistics',
             sections = ['.basic-info'],
             statusLabel = '#sim-status',
@@ -147,6 +154,7 @@
         this.showSimulationView = showSimulationView;
         this.updateView = updateView;
         this.getSimulationSpeed = getSimulationSpeed;
+        this.alert = viewAlert;
     };
 
     module.exports = View;

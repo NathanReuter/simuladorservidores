@@ -17130,7 +17130,7 @@
 		viewInitalConfigIds: ['#begin-form-tc1', '#begin-form-tc2', '#begin-form-ts1', '#begin-form-ts2',
 			'#begin-form-percentagefail', '#begin-form-timefail'],
 		viewStopConditionIds: ['#begin-button-simtime', '#begin-button-maxentities'],
-		mimSimTime: 500
+		mimSimTime: 50
 	};
 
 	module.exports = config;
@@ -17256,8 +17256,8 @@
     var createEntity = function (tc) {
         // Select entity type by 50 % chance
         var type = Math.floor(Math.random() * 2 + 1),
-            nextArriveTime = Number(this.time) + getProbTime('tc'.concat(type)),
-            that = this;
+            nextArriveTime = getProbTime('tc'.concat(type));
+
         this.sistemEntitiesCount++;
 
         var entity =  {
@@ -17268,7 +17268,7 @@
 
         // Fix after free server cb, to add the new entity to freeServer Event
         this.eventList.addEvent(entity.tc, chooseServerByEntityType, [entity], this);
-        this.eventList.addEvent(nextArriveTime, createEntity, [nextArriveTime], this);
+        this.eventList.addEvent(entity.tc, createEntity, [nextArriveTime], this);
     };
     
     var createServer = function (type, maxQueue, simulation) {
@@ -17325,8 +17325,6 @@
     var setupFirstEntities = function () {
         getProbTime = calculateProbTimes(this.settings, this.probFunctions);
         this.eventList.addEvent(this.time, createEntity, [this.time], this);
-        // var firstEntity = createEntity.apply(this);
-        // this.eventList.addEvent(firstEntity);
     };
 
     var chooseServerByEntityType = function (entity) {
@@ -17372,20 +17370,17 @@
         var that = this,
             eventLoop = function () {
                 _.delay(function () {
+                    debugger;
                     that.status = 'running';
                     // Get Current entity in event list
                     that.eventList.nextEvent(function (eventObj) {
                         // Set simulation time to the entity arrive time
                         that.time = eventObj.time;
 
-                        // if (that.time < that.lastestTime) {
-                        //     that.time = that.lastestTime;
-                        // } else {
-                        //     that.lastestTime = that.time;
-                        // }
-
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
+
+                        console.log('Time: ', returnData.time, '- EventName: ', returnData.eventName);
                     });
                     updateView.apply(that);
 
@@ -17417,7 +17412,6 @@
     };
 
     var Simulation = function (simulationSettings) {
-        debugger;
         this.settings = simulationSettings;
         this.time = 0;
         this.sistemEntitiesCount = 0;
@@ -17452,9 +17446,8 @@
         var that = this;
         setupFirstEntities.apply(this);
         beforeRun(this);
-        eventLoopInit.apply(this, [function (sim) {
+        eventLoopInit.apply(this, [function () {
             updateView.apply(that);
-            finalLog(sim);
         }]);
     };
 

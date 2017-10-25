@@ -46,6 +46,7 @@
         Server.prototype.isFull = function () {
             return this.queue.length > this.maxQueue;
         };
+
         Server.prototype.tryToUse = function (entity) {
             if (this.isAvailable) {
                 this.isAvailable = false;
@@ -57,6 +58,7 @@
                 // Add free server resource event after success
                 this.sim.eventList.addEvent((this.sim.time + entity.server.ts), this.freeServer, [entity] ,this);
             } else {
+
                 if (this.queue.length <= this.maxQueue) {
                     entity.status = {
                         waiting: 'Server '.concat(this.id)
@@ -78,7 +80,7 @@
             var nextEntity =  this.queue.shift();
 
             if (nextEntity) {
-                this.sim.eventList.addEvent(nextEntity.tc, this.tryToUse, [nextEntity], this);
+                this.sim.eventList.addEvent(this.sim.time, this.tryToUse, [nextEntity], this);
             }
         };
 
@@ -133,12 +135,15 @@
         var that = this,
             eventLoop = function () {
                 _.delay(function () {
-                    debugger;
                     that.status = 'running';
                     // Get Current entity in event list
                     that.eventList.nextEvent(function (eventObj) {
                         // Set simulation time to the entity arrive time
                         that.time = eventObj.time;
+
+                        if (eventObj.event.name === undefined || eventObj.event.name === '') {
+                            debugger;
+                        }
 
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};

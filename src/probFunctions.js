@@ -2,9 +2,13 @@
     'use strict';
 
     var probFunctions = function () {};
+    
+    var round = function (num) {
+        return Math.round(num * 100) / 100;
+    };
 
     probFunctions.prototype.const = function (constValue) {
-        return constValue;
+        return round(constValue);
     };
 
     /* Return an expo dist random number
@@ -16,7 +20,7 @@
            return 0;
        }
 
-       return (-1 / mean) * (Math.log(1 - u));
+       return round((-1 / mean) * (Math.log(1 - u)));
     };
 
     /* Return a normal dist random number
@@ -30,7 +34,7 @@
             return z;
         }
 
-        return mean + sd * z;
+        return round(mean + sd * z);
     };
 
     /* Return a triangular dist random number
@@ -46,9 +50,9 @@
             };
 
         if (u >= 0 && u < interval) {
-            return lowerFunction();
+            return round(lowerFunction());
         } else if (interval < u  && u <= 1) {
-            return upperFunction();
+            return round(upperFunction());
         }
 
         return 0;
@@ -60,7 +64,7 @@
         // var u = Math.random();
         var u = Math.random();
 
-        return min + (u * (max-min));
+        return round(min + (u * (max-min)));
     };
 
 

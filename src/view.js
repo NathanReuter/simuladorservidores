@@ -89,6 +89,7 @@
     };
 
     var updateView = function (modelData) {
+        console.log('modelData', modelData);
         var statisticsId = '#statistics',
             sections = ['.basic-info'],
             statusLabel = '#sim-status',

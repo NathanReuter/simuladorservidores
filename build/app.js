@@ -17147,7 +17147,7 @@
 
     EventList.prototype.addEvent = function (time, event, params, context) {
         this.list.push({time: time, event: event, params: params, context: context});
-        _.sortBy(this.list, function (event) {
+        this.list = _.sortBy(this.list, function (event) {
             return event.time;
         });
     };
@@ -17170,9 +17170,13 @@
     'use strict';
 
     var probFunctions = function () {};
+    
+    var round = function (num) {
+        return Math.round(num * 100) / 100;
+    };
 
     probFunctions.prototype.const = function (constValue) {
-        return constValue;
+        return round(constValue);
     };
 
     /* Return an expo dist random number
@@ -17184,7 +17188,7 @@
            return 0;
        }
 
-       return (-1 / mean) * (Math.log(1 - u));
+       return round((-1 / mean) * (Math.log(1 - u)));
     };
 
     /* Return a normal dist random number
@@ -17198,7 +17202,7 @@
             return z;
         }
 
-        return mean + sd * z;
+        return round(mean + sd * z);
     };
 
     /* Return a triangular dist random number
@@ -17214,9 +17218,9 @@
             };
 
         if (u >= 0 && u < interval) {
-            return lowerFunction();
+            return round(lowerFunction());
         } else if (interval < u  && u <= 1) {
-            return upperFunction();
+            return round(upperFunction());
         }
 
         return 0;
@@ -17228,7 +17232,7 @@
         // var u = Math.random();
         var u = Math.random();
 
-        return min + (u * (max-min));
+        return round(min + (u * (max-min)));
     };
 
 
@@ -17283,6 +17287,7 @@
         Server.prototype.isFull = function () {
             return this.queue.length > this.maxQueue;
         };
+
         Server.prototype.tryToUse = function (entity) {
             if (this.isAvailable) {
                 this.isAvailable = false;
@@ -17294,6 +17299,7 @@
                 // Add free server resource event after success
                 this.sim.eventList.addEvent((this.sim.time + entity.server.ts), this.freeServer, [entity] ,this);
             } else {
+
                 if (this.queue.length <= this.maxQueue) {
                     entity.status = {
                         waiting: 'Server '.concat(this.id)
@@ -17315,7 +17321,7 @@
             var nextEntity =  this.queue.shift();
 
             if (nextEntity) {
-                this.sim.eventList.addEvent(nextEntity.tc, this.tryToUse, [nextEntity], this);
+                this.sim.eventList.addEvent(this.sim.time, this.tryToUse, [nextEntity], this);
             }
         };
 
@@ -17370,12 +17376,15 @@
         var that = this,
             eventLoop = function () {
                 _.delay(function () {
-                    debugger;
                     that.status = 'running';
                     // Get Current entity in event list
                     that.eventList.nextEvent(function (eventObj) {
                         // Set simulation time to the entity arrive time
                         that.time = eventObj.time;
+
+                        if (eventObj.event.name === undefined || eventObj.event.name === '') {
+                            debugger;
+                        }
 
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
@@ -17545,6 +17554,7 @@
     };
 
     var updateView = function (modelData) {
+        console.log('modelData', modelData);
         var statisticsId = '#statistics',
             sections = ['.basic-info'],
             statusLabel = '#sim-status',

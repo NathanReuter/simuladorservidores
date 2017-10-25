@@ -17259,6 +17259,7 @@
         }
 
     };
+
     var getProbTime;
 
     var createEntity = function (tc) {
@@ -17299,7 +17300,7 @@
                 var failPercentage = getProbTime('percentagefail'),
                     failTime = getProbTime('timefail');
 
-                if (Math.random() * 100 >= failPercentage) {
+                if (Math.random() * 100 <= failPercentage) {
                     this.failing = true;
                     this.failedCount++;
                     this.isAvailable = false;
@@ -17372,7 +17373,7 @@
             return that.disposedEntities.push(entity);
         }
 
-        if (entity.type === 1) {
+        if (entity.type === '1') {
             if (!that.serverOne.isFull()) {
                 that.serverOne.tryToUse(entity);
             } else {
@@ -17391,8 +17392,6 @@
         return (this.endcondition.maxentities && Number(this.endcondition.maxentities) === this.sistemEntitiesCount) ||
             this.time >= Number(this.endcondition.simtime);
     };
-
-
 
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
@@ -17451,12 +17450,24 @@
         this.disposedEntities = [];
         this.status = 'stoped';
         this.simSpeed = simulationSettings.simSpeed;
-        this.lastestTime = 0;
     };
 
     Simulation.prototype.getSimulationData = function () {
         var simulation = this;
+
         var totalCompletedDisposedEntities = simulation.disposedEntities.filter(entity => entity.server).length;
+        var totalEntititesType1 = _.filter(simulation.disposedEntities, function (ent) {
+            return ent.type === 1;
+        }).length;
+        var totalEntititesType2 = _.filter(simulation.disposedEntities, function (ent) {
+            return ent.type === 2;
+        }).length;
+        var averageSistemTime = _.chain(simulation.disposedEntities)
+            .map(function (ent) {
+                return ent.status.time - ent.tc;
+            })
+            .mean()
+            .value();
 
         return {
             currentSimulationTime: simulation.time,
@@ -17465,7 +17476,13 @@
             totalDisposedEntities: simulation.disposedEntities.length,
             totalCompletedDisposedEntities: totalCompletedDisposedEntities,
             entitiesOnServer1: simulation.serverOne.queue.length,
-            entitiesOnServer2: simulation.serverTwo.queue.length
+            entitiesOnServer2: simulation.serverTwo.queue.length,
+            failServer1: simulation.serverOne.failedCount,
+            failServer2: simulation.serverTwo.failedCount,
+            totalFailServers: simulation.serverOne.failedCount + simulation.serverTwo.failedCount,
+            averageSistemTime: averageSistemTime,
+            totalEntititesType1: totalEntititesType1,
+            totalEntititesType2: totalEntititesType2
         };
     };
 

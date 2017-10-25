@@ -33,7 +33,7 @@
         this.eventList.addEvent(entity.tc, chooseServerByEntityType, [entity], this);
         this.eventList.addEvent(entity.tc, createEntity, [nextArriveTime], this);
     };
-    
+
     var createServer = function (type, maxQueue, simulation) {
         var Server = function () {
             this.id = type;
@@ -41,13 +41,31 @@
             this.isAvailable = true;
             this.maxQueue = maxQueue || Number.MAX_VALUE;
             this.sim = simulation;
+            this.failing = false;
+            this.failedCount = 0;
         };
 
         Server.prototype.isFull = function () {
             return this.queue.length > this.maxQueue;
         };
 
+        Server.prototype.checkFail = function () {
+            if (!this.failing) {
+                var failPercentage = getProbTime('percentagefail'),
+                    failTime = getProbTime('timefail');
+
+                if (Math.random() * 100 >= failPercentage) {
+                    this.failing = true;
+                    this.failedCount++;
+                    this.isAvailable = false;
+                    this.sim.eventList.addEvent((this.sim.time + failTime), this.freeServer, [] ,this);
+                }
+            }
+        };
+
         Server.prototype.tryToUse = function (entity) {
+            this.checkFail();
+
             if (this.isAvailable) {
                 this.isAvailable = false;
                 entity.server = {
@@ -58,7 +76,6 @@
                 // Add free server resource event after success
                 this.sim.eventList.addEvent((this.sim.time + entity.server.ts), this.freeServer, [entity] ,this);
             } else {
-
                 if (this.queue.length <= this.maxQueue) {
                     entity.status = {
                         waiting: 'Server '.concat(this.id)
@@ -71,11 +88,17 @@
 
         Server.prototype.freeServer = function freeServer(entity) {
             this.isAvailable = true;
-            entity.status = {
-                done: true,
-                time: this.sim.time
-            };
-            this.sim.disposedEntities.push(entity);
+
+            if (entity) {
+                entity.status = {
+                    done: true,
+                    time: this.sim.time
+                };
+
+                this.sim.disposedEntities.push(entity);
+            } else {
+                this.failing = false;
+            }
 
             var nextEntity =  this.queue.shift();
 
@@ -124,11 +147,7 @@
             this.time >= Number(this.endcondition.simtime);
     };
 
-    var isServerFail = function () {
-        var failtPercentage = this.serversFailPercentage;
 
-        return Math.random() * 100 >= failtPercentage;
-    };
 
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
@@ -180,6 +199,7 @@
     };
 
     var Simulation = function (simulationSettings) {
+        debugger;
         this.settings = simulationSettings;
         this.time = 0;
         this.sistemEntitiesCount = 0;
@@ -192,7 +212,6 @@
         this.status = 'stoped';
         this.simSpeed = simulationSettings.simSpeed;
         this.lastestTime = 0;
-        this.serversFailPercentage = 50;
     };
 
     Simulation.prototype.getSimulationData = function () {

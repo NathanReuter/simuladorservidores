@@ -77,8 +77,12 @@
             color: yellow;
         }
 
+        .button-box-container {
+            padding: 15px;
+            border-left: 5px solid #333333;
+        }
         .buttons-box {
-            border: 5px solid #ababab;
+            border-bottom: 5px solid #ababab;
             border-radius: 5px;
             width: fit-content;
             padding: 10px;
@@ -93,6 +97,8 @@
             margin-bottom: 5px;
             max-width: 250px;
         }
+
+
     </style>
 </head>
 <body>
@@ -409,7 +415,7 @@
                         <input id="begin-button-maxentities" class="form-control" min="0" max="100" type="number" placeholder="%">
                     </div>
                     <div class="col-sm-3">
-                        <h6>Tempo de Simulação (s):</h6>
+                        <h6>Tempo de Simulação (s)(Default: 200):</h6>
                     </div>
                     <div class="col-sm-3">
                         <input id="begin-button-simtime" class="form-control" min="0" max="100" type="number" placeholder="%">
@@ -461,13 +467,13 @@
                             </section>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-4 button-box-container">
                         <div id="controls">
-                            <h6 class="section-header text-left">Controles</h6>
+                            <h6 class="section-header text-left">Controles Simulação</h6>
                             <div class="buttons-box">
-                                <button class="btn"><i class="fa fa-stop-circle-o" aria-hidden="true"></i></button>
-                                <button class="btn btn-success"><i class="fa fa-play-circle" aria-hidden="true"></i></i></button>
-                            </div>
+                                <button data-info="back-button" class="btn btn-danger"><i class="fa fa-undo" aria-hidden="true"></i></button>
+                                <button data-info="stop-button" class="btn"><i class="fa fa-stop-circle-o" aria-hidden="true"></i></button>
+                                <button data-info="play-button" class="btn btn-success"><i class="fa fa-play-circle" aria-hidden="true"></i></i></button>
                             </div>
                         </div>
                     </div>

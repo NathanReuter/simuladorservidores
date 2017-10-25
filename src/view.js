@@ -88,6 +88,19 @@
         showElement(this.simViewId);
     };
 
+    var hideSimulation = function () {
+        hideElement(this.simViewId);
+        showElement(this.initalFormId);
+    };
+
+    var registerControlButtons = function (view) {
+        var controlArea = document.getElementById('controls');
+
+        controlArea.querySelector('[data-info=back-button]').onclick = function () {
+            hideSimulation.apply(view);
+        };
+    };
+
     var updateView = function (modelData) {
         console.log('modelData', modelData);
         var statisticsId = '#statistics',
@@ -126,6 +139,7 @@
             this.simViewId = 'sim-view';
             bindFormListeners(this.viewInitalConfigIds);
             hideElement(this.simViewId);
+            registerControlButtons(this);
         };
 
         this.getBeginFormData = getBeginFormData;

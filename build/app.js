@@ -17139,19 +17139,25 @@
 (function () {
     "use strict";
 
+    var _ = require('lodash');
+
     var EventList = function () {
         this.list = [];
     };
 
     EventList.prototype.addEvent = function (time, event, params, context) {
         this.list.push({time: time, event: event, params: params, context: context});
-        this.list.sort(function (event1, event2) {
-            return event1.time > event2.time;
+        _.sortBy(this.list, function (event) {
+            return event.time;
         });
     };
 
     EventList.prototype.nextEvent = function (callback) {
         // Just get the head of the list
+        _.sortBy(this.list, function (event) {
+            return event.time;
+        });
+
         var eventObj = this.list.shift();
 
         callback(eventObj);
@@ -17159,7 +17165,7 @@
 
     module.exports = EventList;
 })();
-},{}],5:[function(require,module,exports){
+},{"lodash":1}],5:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -17355,6 +17361,12 @@
             this.time >= Number(this.endcondition.simtime);
     };
 
+    var isServerFail = function () {
+        var failtPercentage = this.serversFailPercentage;
+
+        return Math.random() * 100 >= failtPercentage;
+    };
+
     var eventLoopInit = function (endSimulationCB) {
         // MODIFICAR LISTA DE EVENTOS!! DE A OCORDO COM O ALGORITMO
         var that = this,
@@ -17365,6 +17377,12 @@
                     that.eventList.nextEvent(function (eventObj) {
                         // Set simulation time to the entity arrive time
                         that.time = eventObj.time;
+
+                        // if (that.time < that.lastestTime) {
+                        //     that.time = that.lastestTime;
+                        // } else {
+                        //     that.lastestTime = that.time;
+                        // }
 
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
@@ -17399,6 +17417,7 @@
     };
 
     var Simulation = function (simulationSettings) {
+        debugger;
         this.settings = simulationSettings;
         this.time = 0;
         this.sistemEntitiesCount = 0;
@@ -17410,6 +17429,8 @@
         this.disposedEntities = [];
         this.status = 'stoped';
         this.simSpeed = simulationSettings.simSpeed;
+        this.lastestTime = 0;
+        this.serversFailPercentage = 50;
     };
 
     Simulation.prototype.getSimulationData = function () {

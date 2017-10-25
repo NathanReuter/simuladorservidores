@@ -1,19 +1,25 @@
 (function () {
     "use strict";
 
+    var _ = require('lodash');
+
     var EventList = function () {
         this.list = [];
     };
 
     EventList.prototype.addEvent = function (time, event, params, context) {
         this.list.push({time: time, event: event, params: params, context: context});
-        this.list.sort(function (event1, event2) {
-            return event1.time > event2.time;
+        _.sortBy(this.list, function (event) {
+            return event.time;
         });
     };
 
     EventList.prototype.nextEvent = function (callback) {
         // Just get the head of the list
+        _.sortBy(this.list, function (event) {
+            return event.time;
+        });
+
         var eventObj = this.list.shift();
 
         callback(eventObj);

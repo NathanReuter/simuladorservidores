@@ -94,6 +94,7 @@
     var showSimulationView = function () {
         hideElement(this.initalFormId);
         showElement(this.simViewId);
+        showElement('running-spinner');
     };
 
     var hideSimulation = function () {
@@ -124,6 +125,10 @@
             };
 
         setStatusText();
+
+        if (modelData.simulationStatus === 'finished') {
+            hideElement('running-spinner');
+        }
         _.forEach(sections, function (section) {
             _.forIn(modelData, function (value, key) {
                 var referenceData = key.replace(/([A-Z])/g, "-$1").toLowerCase();

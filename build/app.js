@@ -17289,6 +17289,7 @@
             this.sim = simulation;
             this.failing = false;
             this.failedCount = 0;
+            this.totalFailedTime = 0;
         };
 
         Server.prototype.isFull = function () {
@@ -17303,6 +17304,7 @@
                 if (Math.random() * 100 <= failPercentage) {
                     this.failing = true;
                     this.failedCount++;
+                    this.totalFailedTime += failTime;
                     this.isAvailable = false;
                     this.sim.eventList.addEvent((this.sim.time + failTime), this.freeServer, [] ,this);
                 }
@@ -17373,16 +17375,18 @@
             return that.disposedEntities.push(entity);
         }
 
-        if (entity.type === '1') {
-            if (!that.serverOne.isFull()) {
+        if (entity.type === 1) {
+            if (!that.serverOne.isFull() && !that.serverOne.failing) {
                 that.serverOne.tryToUse(entity);
             } else {
                 that.serverTwo.tryToUse(entity);
+                that.serverChangeCount++;
             }
-        } else {
-            if (!that.serverTwo.isFull()) {
+        } else if (entity.type === 2) {
+            if (!that.serverTwo.isFull() && !that.serverTwo.failing) {
                 that.serverTwo.tryToUse(entity);
             } else {
+                that.serverChangeCount++;
                 that.serverOne.tryToUse(entity);
             }
         }
@@ -17423,15 +17427,6 @@
         eventLoop();
     };
 
-    var finalLog = function (simulation) {
-        console.log('Total de Entidades: ', simulation.sistemEntitiesCount);
-        console.log('Total de Entidades Dispensadas: ', simulation.disposedEntities.length);
-        console.log('Total de Entidades Dispensadas Completadas: ', simulation.disposedEntities.filter(entity => entity.server).length);
-        console.log('Total de tempo de Simulação: ', simulation.time, 'segundos');
-        console.log('Entidades na fila servidor 1: ', simulation.serverOne.queue.length);
-        console.log('Entidades na fila servidor 2: ', simulation.serverTwo.queue.length);
-    };
-
     var updateView = function () {
         if (typeof this.updateView === 'function') {
             this.updateView(this.getSimulationData());
@@ -17450,6 +17445,7 @@
         this.disposedEntities = [];
         this.status = 'stoped';
         this.simSpeed = simulationSettings.simSpeed;
+        this.serverChangeCount = 0;
     };
 
     Simulation.prototype.getSimulationData = function () {
@@ -17481,8 +17477,11 @@
             failServer2: simulation.serverTwo.failedCount,
             totalFailServers: simulation.serverOne.failedCount + simulation.serverTwo.failedCount,
             averageSistemTime: averageSistemTime,
-            totalEntititesType1: totalEntititesType1,
-            totalEntititesType2: totalEntititesType2
+            totalEntitieType1: totalEntititesType1,
+            totalEntitieType2: totalEntititesType2,
+            failTimeServer1: simulation.serverOne.totalFailedTime,
+            failTimeServer2: simulation.serverTwo.totalFailedTime,
+            serverChangeCount: simulation.serverChangeCount
         };
     };
 
@@ -17594,6 +17593,7 @@
     var showSimulationView = function () {
         hideElement(this.initalFormId);
         showElement(this.simViewId);
+        showElement('running-spinner');
     };
 
     var hideSimulation = function () {
@@ -17624,6 +17624,10 @@
             };
 
         setStatusText();
+
+        if (modelData.simulationStatus === 'finished') {
+            hideElement('running-spinner');
+        }
         _.forEach(sections, function (section) {
             _.forIn(modelData, function (value, key) {
                 var referenceData = key.replace(/([A-Z])/g, "-$1").toLowerCase();

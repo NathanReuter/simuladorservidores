@@ -17290,6 +17290,7 @@
             this.failing = false;
             this.failedCount = 0;
             this.totalFailedTime = 0;
+            this.entitiesInQueueByTime = {};
         };
 
         Server.prototype.isFull = function () {
@@ -17313,6 +17314,7 @@
 
         Server.prototype.tryToUse = function (entity) {
             this.checkFail();
+            this.entitiesInQueueByTime[this.queue.length] = this.entitiesInQueueByTime[this.queue.length] || 1;
 
             if (this.isAvailable) {
                 this.isAvailable = false;
@@ -17321,12 +17323,20 @@
                     ts: getProbTime('ts'.concat(type))
                 };
 
+                if (entity.queue) {
+                    entity.queue.watingTime = this.sim.time - entity.queue.arriveTime;
+                }
+
                 // Add free server resource event after success
                 this.sim.eventList.addEvent((this.sim.time + entity.server.ts), this.freeServer, [entity] ,this);
             } else {
                 if (this.queue.length <= this.maxQueue) {
                     entity.status = {
-                        waiting: 'Server '.concat(this.id)
+                        waiting: 'Server '.concat(this.id),
+                    };
+
+                    entity.queue = {
+                        arriveTime: this.sim.time
                     };
 
                     this.queue.push(entity);
@@ -17410,8 +17420,6 @@
 
                         var returnData = {time: eventObj.time, eventName: eventObj.event.name,
                             returnValue: eventObj.event.apply(eventObj.context, eventObj.params)};
-
-                        console.log('Time: ', returnData.time, '- EventName: ', returnData.eventName);
                     });
                     updateView.apply(that);
 
@@ -17455,15 +17463,38 @@
         var totalEntititesType1 = _.filter(simulation.disposedEntities, function (ent) {
             return ent.type === 1;
         }).length;
+
         var totalEntititesType2 = _.filter(simulation.disposedEntities, function (ent) {
             return ent.type === 2;
         }).length;
+
         var averageSistemTime = _.chain(simulation.disposedEntities)
             .map(function (ent) {
                 return ent.status.time - ent.tc;
             })
             .mean()
             .value();
+
+        var averageQueueTime = _.chain(simulation.disposedEntities)
+            .filter(function (ent) {
+                return ent.queue
+            })
+            .map(function (ent) {
+                return ent.queue.watingTime;
+            })
+            .mean()
+            .value();
+
+        var getWaitingNumber = function (times) {
+            return _.mean(_.reduce(times, function (arr, val, key) {
+                arr.push(val * key)
+                return arr;
+            }, []));
+        };
+
+        var server1WaitingNumber = getWaitingNumber(simulation.serverOne.entitiesInQueueByTime);
+
+        var server2WaitingNumber = getWaitingNumber(simulation.serverTwo.entitiesInQueueByTime);
 
         return {
             currentSimulationTime: simulation.time,
@@ -17481,7 +17512,11 @@
             totalEntitieType2: totalEntititesType2,
             failTimeServer1: simulation.serverOne.totalFailedTime,
             failTimeServer2: simulation.serverTwo.totalFailedTime,
-            serverChangeCount: simulation.serverChangeCount
+            serverChangeCount: simulation.serverChangeCount,
+            averageQueueTime: averageQueueTime,
+            server1WaitingNumber: server1WaitingNumber,
+            server2WaitingNumber: server2WaitingNumber,
+            totalWaitingTime: (server1WaitingNumber + server2WaitingNumber) / 2
         };
     };
 
